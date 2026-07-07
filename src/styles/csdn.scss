@@ -1,0 +1,124 @@
+// ===== CSDN 风格设计 Token =====
+
+:root {
+  --csdn-red: #c8242f;
+  --csdn-red-lt: #c20a0a;
+  --csdn-red-dk: #b80e0e;
+  --csdn-bg: #f5f6f7;
+  --csdn-border: #e8e8e8;
+  --csdn-text: #333333;
+  --csdn-sub: #999999;
+  --csdn-code-bg: #282c34;
+  --csdn-code-fg: #abb2bf;
+  --csdn-header-h: 92px;
+}
+
+// ===== CSDN 文章正文样式 =====
+.csdn-article {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--csdn-text);
+
+  p {
+    margin: 0 0 1em;
+    text-indent: 2em;
+  }
+
+  h2 {
+    font-size: 1.3em;
+    font-weight: 700;
+    margin: 1.5em 0 0.8em;
+    border-left: 4px solid var(--csdn-red);
+    padding-left: 12px;
+    background: linear-gradient(to right, rgba(200,36,47,0.05), transparent);
+  }
+
+  h3 {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin: 1.2em 0 0.6em;
+    color: #2c3e50;
+  }
+
+  pre {
+    background: var(--csdn-code-bg);
+    padding: 16px;
+    border-radius: 4px;
+    overflow-x: auto;
+    border: 1px solid #ddd;
+
+    code {
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.85em;
+      line-height: 1.5;
+      color: var(--csdn-code-fg);
+    }
+  }
+
+  img {
+    max-width: 100%;
+    border-radius: 4px;
+    margin: 1em 0;
+  }
+
+  blockquote {
+    margin: 1em 0;
+    padding: 8px 16px;
+    border-left: 4px solid var(--csdn-red);
+    background: #f9f9f9;
+    color: #666;
+  }
+
+  ul, ol {
+    margin: 0 0 1em;
+    padding-left: 2em;
+  }
+
+  a {
+    color: var(--csdn-red);
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// ===== CSDN 通用组件样式 =====
+.csdn-card {
+  background: #fff;
+  border: 1px solid var(--csdn-border);
+  border-radius: 4px;
+}
+
+.csdn-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  background: #f0f0f0;
+  color: #999;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--csdn-red);
+    color: #fff;
+  }
+}
+
+.csdn-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 16px;
+  font-size: 13px;
+  color: #fff;
+  background: var(--csdn-red);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #a11d26;
+  }
+}
