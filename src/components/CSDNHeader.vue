@@ -2,7 +2,7 @@
   <header class="fixed top-0 left-0 right-0 z-50" style="background:linear-gradient(180deg,#c20a0a,#c8242f)">
     <!-- 主栏 -->
     <div class="max-w-[1200px] mx-auto flex items-center h-[50px] px-4">
-      <a class="text-white text-xl font-bold mr-8 tracking-wider" href="/">CSDN</a>
+      <a class="text-white text-xl font-bold mr-6 tracking-wider" href="/" style="font-family: Arial, sans-serif;">CSDN</a>
       <nav class="hidden lg:flex items-center gap-1 text-sm">
         <a v-for="item in navItems" :key="item"
           class="px-3 py-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded transition-colors"
@@ -18,19 +18,23 @@
           </svg>
           <input class="bg-transparent text-white text-xs outline-none ml-2 w-28 placeholder-white/40" placeholder="搜索CSDN" />
         </div>
-        <button class="hidden sm:block text-xs text-white/80 hover:text-white">登录</button>
+        <button class="hidden sm:block text-xs text-white/80 hover:text-white px-3 py-1 rounded hover:bg-white/10 transition-colors">登录</button>
+        <a class="hidden md:flex items-center gap-1 text-xs text-white bg-yellow-500/20 border border-yellow-500/30 rounded-sm px-3 py-1 hover:bg-yellow-500/30 transition-colors" href="#">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 14v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2zm-11 2l-5-5 5-5 1.41 1.41L7.83 10H17v2H7.83l3.58 3.59L8 16z"/></svg>
+          写博客
+        </a>
       </div>
     </div>
     <!-- 子导航栏 -->
     <div class="border-t border-white/10" style="background:#b80e0e">
       <div class="max-w-[1200px] mx-auto flex items-center h-9 px-4 gap-4 text-xs text-white/70">
-        <span class="text-white font-medium">首页</span>
-        <span>博客</span>
-        <span>移动</span>
-        <span>云原生</span>
-        <span>AI</span>
-        <span>程序员</span>
-        <span>问答</span>
+        <span class="text-white font-medium cursor-pointer">首页</span>
+        <span class="cursor-pointer hover:text-white transition-colors">博客</span>
+        <span class="cursor-pointer hover:text-white transition-colors">移动</span>
+        <span class="cursor-pointer hover:text-white transition-colors">云原生</span>
+        <span class="cursor-pointer hover:text-white transition-colors">AI</span>
+        <span class="cursor-pointer hover:text-white transition-colors">程序员</span>
+        <span class="cursor-pointer hover:text-white transition-colors">问答</span>
         <span class="ml-auto text-white/50">| 成就一亿技术人</span>
       </div>
     </div>
