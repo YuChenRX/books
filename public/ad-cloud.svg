@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="250" viewBox="0 0 300 250">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="50%" style="stop-color:#16213e"/>
+      <stop offset="100%" style="stop-color:#0f3460"/>
+    </linearGradient>
+    <linearGradient id="btn" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e94560"/>
+      <stop offset="100%" style="stop-color:#533483"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="250" fill="url(#bg)"/>
+  <circle cx="80" cy="60" r="40" fill="none" stroke="rgba(233,69,96,0.15)" stroke-width="20"/>
+  <circle cx="220" cy="200" r="50" fill="none" stroke="rgba(83,52,131,0.12)" stroke-width="25"/>
+  <text x="150" y="70" text-anchor="middle" font-size="48">☁️</text>
+  <text x="150" y="110" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff" font-family="Arial,sans-serif">云服务器限时特惠</text>
+  <text x="150" y="135" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.7)" font-family="Arial,sans-serif">2核4G 5M带宽</text>
+  <text x="150" y="165" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.5)" font-family="Arial,sans-serif">¥</text>
+  <text x="145" y="190" text-anchor="middle" font-size="36" font-weight="bold" fill="#ffffff" font-family="Arial,sans-serif">99</text>
+  <text x="195" y="185" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.5)" font-family="Arial,sans-serif">/年</text>
+  <rect x="90" y="205" width="120" height="28" rx="14" fill="url(#btn)"/>
+  <text x="150" y="224" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffffff" font-family="Arial,sans-serif">立即抢购</text>
+  <text x="280" y="15" text-anchor="end" font-size="10" fill="rgba(255,255,255,0.3)" font-family="Arial,sans-serif">广告</text>
+</svg>

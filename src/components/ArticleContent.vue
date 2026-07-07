@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
 import hljs from 'highlight.js'
+import 'highlight.js/styles/atom-one-dark.css'
 
 const props = defineProps<{ content: string }>()
 const articleRef = ref<HTMLElement | null>(null)

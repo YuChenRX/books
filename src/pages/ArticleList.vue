@@ -112,11 +112,7 @@
           </div>
         </div>
         <div class="csdn-card overflow-hidden">
-          <div class="h-32 bg-gradient-to-br from-blue-50 to-indigo-50 flex flex-col items-center justify-center">
-            <div class="text-xs text-gray-500 font-medium">💻 云服务器限时特惠</div>
-            <div class="text-[11px] text-gray-400 mt-1">1核2G 仅需 99元/年</div>
-            <span class="mt-2 px-3 py-0.5 text-[10px] bg-blue-500 text-white rounded-sm">了解更多</span>
-          </div>
+          <img src="/ad-cloud.svg" alt="云服务器" class="w-full block" style="max-height:140px;object-fit:cover;object-position:center top;">
         </div>
       </div>
     </div>

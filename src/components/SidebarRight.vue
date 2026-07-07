@@ -63,36 +63,13 @@
       </div>
     </div>
 
-    <!-- 广告位：模拟 CSDN 风格广告图片 -->
+    <!-- 广告位：本地图片素材 -->
     <div class="csdn-card overflow-hidden group cursor-pointer">
-      <div class="h-52 flex flex-col items-center justify-center px-5 text-center relative overflow-hidden" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);">
-        <div class="absolute inset-0 opacity-10" style="background: radial-gradient(circle at 30% 50%, #e94560 0%, transparent 60%), radial-gradient(circle at 70% 30%, #533483 0%, transparent 50%);"></div>
-        <div class="text-5xl mb-3">☁️</div>
-        <div class="text-white font-bold text-sm leading-tight">阿里云服务器</div>
-        <div class="text-white/80 text-xs mt-1">2核4G 5M带宽</div>
-        <div class="mt-2 flex items-baseline gap-0.5">
-          <span class="text-[10px] text-white/60">¥</span>
-          <span class="text-2xl font-bold text-white">99</span>
-          <span class="text-[10px] text-white/60">/年</span>
-        </div>
-        <span class="mt-3 px-6 py-1 text-[11px] font-medium text-white rounded-full" style="background: linear-gradient(90deg, #e94560, #533483);">立即抢购</span>
-        <div class="absolute top-1.5 right-2 text-[10px] text-white/30">广告</div>
-      </div>
+      <img src="/ad-cloud.svg" alt="云服务器" class="w-full block">
     </div>
 
     <div class="csdn-card overflow-hidden group cursor-pointer">
-      <div class="h-36 flex items-center px-4 gap-4 relative overflow-hidden" style="background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);">
-        <div class="text-4xl">🎓</div>
-        <div class="flex-1">
-          <div class="text-sm font-bold text-gray-800">Python 全栈工程师</div>
-          <div class="text-[11px] text-gray-500 mt-0.5">0基础入门 · 项目实战 · 就业指导</div>
-          <div class="flex items-center gap-2 mt-2">
-            <span class="text-[10px] line-through text-gray-400">¥6999</span>
-            <span class="text-sm font-bold text-[#c8242f]">限时免费</span>
-          </div>
-        </div>
-        <div class="absolute top-1.5 right-2 text-[10px] text-gray-400">广告</div>
-      </div>
+      <img src="/ad-course.svg" alt="课程培训" class="w-full block">
     </div>
 
     <!-- 友情链接 -->
