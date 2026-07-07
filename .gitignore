@@ -64,3 +64,4 @@ build/
 .temp/
 
 bun.lock
+.vercel
