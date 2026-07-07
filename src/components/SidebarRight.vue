@@ -63,22 +63,35 @@
       </div>
     </div>
 
-    <!-- 广告位 -->
-    <div class="csdn-card overflow-hidden">
-      <div class="h-48 bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center px-4">
-        <svg class="w-8 h-8 text-gray-300 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <rect x="3" y="3" width="18" height="18" rx="2"/>
-          <path d="M3 9h18M9 3v18"/>
-        </svg>
-        <div class="text-xs text-gray-400 text-center leading-relaxed">
-          <span class="font-medium text-gray-500">🎯 精准触达技术人群</span><br />
-          <span>广告投放请联系：</span><br />
-          <span class="text-[#c8242f] font-medium">ad@csdn.net</span>
+    <!-- 广告位：模拟 CSDN 风格广告图片 -->
+    <div class="csdn-card overflow-hidden group cursor-pointer">
+      <div class="h-52 flex flex-col items-center justify-center px-5 text-center relative overflow-hidden" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);">
+        <div class="absolute inset-0 opacity-10" style="background: radial-gradient(circle at 30% 50%, #e94560 0%, transparent 60%), radial-gradient(circle at 70% 30%, #533483 0%, transparent 50%);"></div>
+        <div class="text-5xl mb-3">☁️</div>
+        <div class="text-white font-bold text-sm leading-tight">阿里云服务器</div>
+        <div class="text-white/80 text-xs mt-1">2核4G 5M带宽</div>
+        <div class="mt-2 flex items-baseline gap-0.5">
+          <span class="text-[10px] text-white/60">¥</span>
+          <span class="text-2xl font-bold text-white">99</span>
+          <span class="text-[10px] text-white/60">/年</span>
         </div>
-        <div class="mt-3 flex gap-2 text-[10px]">
-          <span class="px-2 py-0.5 bg-[#c8242f] text-white rounded-sm">了解详情</span>
-          <span class="px-2 py-0.5 border border-gray-300 text-gray-500 rounded-sm">关闭</span>
+        <span class="mt-3 px-6 py-1 text-[11px] font-medium text-white rounded-full" style="background: linear-gradient(90deg, #e94560, #533483);">立即抢购</span>
+        <div class="absolute top-1.5 right-2 text-[10px] text-white/30">广告</div>
+      </div>
+    </div>
+
+    <div class="csdn-card overflow-hidden group cursor-pointer">
+      <div class="h-36 flex items-center px-4 gap-4 relative overflow-hidden" style="background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);">
+        <div class="text-4xl">🎓</div>
+        <div class="flex-1">
+          <div class="text-sm font-bold text-gray-800">Python 全栈工程师</div>
+          <div class="text-[11px] text-gray-500 mt-0.5">0基础入门 · 项目实战 · 就业指导</div>
+          <div class="flex items-center gap-2 mt-2">
+            <span class="text-[10px] line-through text-gray-400">¥6999</span>
+            <span class="text-sm font-bold text-[#c8242f]">限时免费</span>
+          </div>
         </div>
+        <div class="absolute top-1.5 right-2 text-[10px] text-gray-400">广告</div>
       </div>
     </div>
 
