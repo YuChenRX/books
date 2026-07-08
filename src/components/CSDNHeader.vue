@@ -25,7 +25,7 @@
         <button class="hidden sm:block text-xs text-white/80 hover:text-white px-3 py-1 rounded hover:bg-white/10 transition-colors">登录</button>
         <!-- 写博客（固定文字，点击切换小说） -->
         <a class="hidden md:flex items-center gap-1 text-xs text-white bg-yellow-500/20 border border-yellow-500/30 rounded-sm px-3 py-1 hover:bg-yellow-500/30 transition-colors no-underline cursor-pointer"
-          @click="novelStore.bump()">
+          @click="handleBump">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 14v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2zm-11 2l-5-5 5-5 1.41 1.41L7.83 10H17v2H7.83l3.58 3.59L8 16z"/></svg>
           写博客
         </a>
@@ -55,8 +55,18 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
 import { useNovelStore } from '@/stores/novel'
 
+const router = useRouter()
 const novelStore = useNovelStore()
 const navItems = ['博客', '下载', '学习', '社区', 'GitCode', '猿如意']
+
+function handleBump() {
+  novelStore.bump()
+  // 在首页时，跳转到第一篇文章
+  if (router.currentRoute.value.path === '/') {
+    router.push('/article/a1')
+  }
+}
 </script>

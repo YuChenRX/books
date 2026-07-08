@@ -274,7 +274,22 @@ console.log(`📖 正在转换: ${inputFile}`);
 const raw = readText(inputFile);
 const chapters = parseChapters(raw);
 const html = generateHtml(chapters);
+
+// 输出 HTML 阅读文件
 writeFileSync(outputFile, html, "utf-8");
+
+// 同时输出 JSON 句子列表（供小说模式流式加载）
+const allParagraphs = chapters.flatMap(ch => ch.paragraphs.filter(p => p.trim()))
+const allText = allParagraphs.join('')
+const rawSentences = allText.split(/[。！？\n；]/).map(s => s.trim()).filter(Boolean)
+const shortSentences = rawSentences.filter(s => {
+  const len = [...s].filter(c => c.match(/[\u4e00-\u9fff\w]/)).length
+  return len >= 2 && len <= 20
+})
+const jsonFile = outputFile.replace(/\.html$/i, '.json')
+writeFileSync(jsonFile, JSON.stringify(shortSentences, null, 2), "utf-8")
+
 console.log(`✅ 转换完成: ${outputFile}`);
 console.log(`   📄 共 ${chapters.length} 章`);
+console.log(`   🔤 提取 ${shortSentences.length} 个句子 → ${jsonFile}`);
 if (author) console.log(`   ✍️  作者: ${author}`);

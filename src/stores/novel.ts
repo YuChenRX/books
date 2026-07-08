@@ -46,6 +46,18 @@ export const useNovelStore = defineStore('novel', () => {
     const target = url || novelFile.value
     loading.value = true
     try {
+      // 优先加载 JSON 句子列表（流式友好，无需解析 DOM）
+      const jsonUrl = target.replace(/\.html$/i, '.json')
+      const jsonRes = await fetch(jsonUrl)
+      if (jsonRes.ok) {
+        const data: string[] = await jsonRes.json()
+        sentences.value = data
+        novelTitle.value = target.split('/').pop()?.replace(/\.\w+$/, '') || ''
+        if (currentIdx.value >= data.length) currentIdx.value = 0
+        loading.value = false
+        return
+      }
+      // 回退：从 HTML 解析
       const res = await fetch(target)
       const html = await res.text()
       const doc = new DOMParser().parseFromString(html, 'text/html')
