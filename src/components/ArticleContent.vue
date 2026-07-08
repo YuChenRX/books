@@ -4,8 +4,20 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
-import hljs from 'highlight.js'
+import hljs from 'highlight.js/lib/core'
 import 'highlight.js/styles/atom-one-dark.css'
+import typescript from 'highlight.js/lib/languages/typescript'
+import javascript from 'highlight.js/lib/languages/javascript'
+import xml from 'highlight.js/lib/languages/xml'
+import css from 'highlight.js/lib/languages/css'
+import python from 'highlight.js/lib/languages/python'
+
+// 注册文章中用到的语言
+hljs.registerLanguage('typescript', typescript)
+hljs.registerLanguage('javascript', javascript)
+hljs.registerLanguage('xml', xml)
+hljs.registerLanguage('css', css)
+hljs.registerLanguage('python', python)
 import { useNovelStore } from '@/stores/novel'
 
 const props = defineProps<{ content: string }>()
@@ -106,8 +118,8 @@ function highlightBlocks() {
 watch(() => props.content, highlightBlocks, { immediate: true })
 </script>
 
-<style scoped>
-/* 极其隐蔽：和正文完全融合，仅 hover 可见 */
+<style>
+/* 全局：动态注入的小说句子，不受 scoped 影响 */
 .novel-inject {
   display: inline;
   color: inherit;
