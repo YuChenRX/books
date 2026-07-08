@@ -79,7 +79,17 @@ function highlightBlocks() {
   nextTick(() => {
     articleRef.value!.querySelectorAll('pre code').forEach(block => {
       const el = block as HTMLElement
-      try { hljs.highlightElement(el) } catch { /* */ }
+      const hasLang = [...el.classList].some(c => c.startsWith('language-'))
+      if (hasLang) {
+        try { hljs.highlightElement(el) } catch { /* */ }
+      } else {
+        // 自动检测语言
+        try {
+          const result = hljs.highlightAuto(el.textContent || '')
+          el.innerHTML = result.value
+          el.classList.add('language-' + result.language)
+        } catch { /* */ }
+      }
       const pre = el.parentElement
       if (pre && !pre.hasAttribute('data-lang')) {
         const langClass = [...el.classList].find(c => c.startsWith('language-'))

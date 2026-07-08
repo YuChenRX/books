@@ -13,7 +13,12 @@ interface Progress {
 function loadProgress(): Progress {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) return JSON.parse(raw)
+    if (raw) {
+      const p = JSON.parse(raw)
+      // 兼容旧数据：enabled 为 true 但 novelIndex 缺失或为 0
+      if (p.enabled && (!p.novelIndex || p.novelIndex < 1)) p.novelIndex = 1
+      return p
+    }
   } catch { /* */ }
   return { currentIdx: 0, enabled: false, novelFile: '/novel/无职转生.html', novelIndex: 0 }
 }
