@@ -3,7 +3,7 @@
     <!-- 主栏 -->
     <div class="max-w-[1200px] mx-auto flex items-center h-[50px] px-4">
       <!-- CSDN 红底白字 Logo -->
-      <a href="/" class="flex items-center gap-1 no-underline mr-5">
+      <a href="/" class="flex items-center gap-1 no-underline mr-5" @dblclick.prevent="$router.push('/novel-config')">
         <span class="inline-flex items-center justify-center w-[54px] h-[28px] bg-[#c8242f] rounded-[3px] text-white text-[15px] font-bold tracking-wider" style="font-family: Arial, sans-serif;">CSDN</span>
         <span class="text-white/90 text-[13px] font-medium hidden sm:inline">博客</span>
       </a>
