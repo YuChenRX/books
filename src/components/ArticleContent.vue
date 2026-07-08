@@ -43,8 +43,6 @@ function injectNovelSentences() {
     span.className = 'novel-inject'
     span.textContent = sentence
     span.addEventListener('click', () => {
-      novelStore.nextSentence()
-      // 点击后刷新所有注入点
       injectNovelSentences()
     })
 
@@ -69,7 +67,7 @@ watch(() => novelStore.enabled, (val) => {
     injectedElements.forEach(el => el.remove())
     injectedElements = []
   }
-})
+}, { immediate: true })
 
 // 滚动信号：写博客/铃铛点击时滚动到第一个句子
 watch(() => novelStore.scrollTick, () => {
@@ -77,7 +75,7 @@ watch(() => novelStore.scrollTick, () => {
     const el = articleRef.value?.querySelector('.novel-inject') as HTMLElement | null
     el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   })
-})
+}, { immediate: true })
 
 // 代码高亮 + 语言标签
 function highlightBlocks() {
