@@ -1,78 +1,76 @@
 <template>
-  <div ref="articleRef" class="csdn-article px-6 py-4">
-    <template v-for="(seg, i) in segments" :key="i">
-      <div class="seg-wrapper">
-        <div v-html="seg"></div>
-        <!-- 极度隐蔽的小说句子 -->
-        <span
-          v-if="novelStore.enabled && shouldInsert(i) && novelSentence"
-          ref="sentenceRef"
-          class="novel-inject"
-          @click="handleClick"
-        >{{ novelSentence }}</span>
-      </div>
-    </template>
-  </div>
+  <div ref="articleRef" class="csdn-article px-6 py-4" v-html="content"></div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/atom-one-dark.css'
 import { useNovelStore } from '@/stores/novel'
 
 const props = defineProps<{ content: string }>()
 const articleRef = ref<HTMLElement | null>(null)
-const sentenceRef = ref<HTMLElement | null>(null)
 const novelStore = useNovelStore()
 
-const segments = computed(() => props.content.split('\n').filter(s => s.trim()))
+// 上次注入的句子元素列表，用于点击后批量更新
+let injectedElements: HTMLElement[] = []
 
-function shouldInsert(index: number): boolean {
-  return index < segments.value.length - 1
+/** 随机选 N 个段落注入小说句子 */
+function injectNovelSentences() {
+  if (!articleRef.value || !novelStore.enabled) return
+
+  // 清除旧注入
+  injectedElements.forEach(el => el.remove())
+  injectedElements = []
+
+  // 找个合适的插入点：所有 <p> 标签
+  const paragraphs = articleRef.value.querySelectorAll('p')
+  if (paragraphs.length === 0) return
+
+  // 随机选插入点，数量 = max(1, 段落数/5)，间隔大
+  const count = Math.max(1, Math.floor(paragraphs.length / 5))
+  const indices = new Set<number>()
+  while (indices.size < count) {
+    const idx = Math.floor(Math.random() * paragraphs.length)
+    indices.add(idx)
+  }
+
+  for (const idx of indices) {
+    const sentence = novelStore.currentSentence()
+    if (!sentence) break
+
+    const span = document.createElement('span')
+    span.className = 'novel-inject'
+    span.textContent = sentence
+    span.addEventListener('click', () => {
+      novelStore.nextSentence()
+      // 点击后刷新所有注入点
+      injectNovelSentences()
+    })
+
+    paragraphs[idx].after(span)
+    injectedElements.push(span)
+    novelStore.nextSentence() // 推进到下一句
+  }
 }
 
-const novelSentence = computed(() => novelStore.currentSentence())
-
-function handleClick() {
-  novelStore.nextSentence()
-}
-
-// 激活时自动滚动到第一个句子
-let scrollAttempted = false
+// 小说模式切换时处理
 watch(() => novelStore.enabled, (val) => {
   if (val) {
-    scrollAttempted = false
-    tryScrollToSentence()
+    nextTick(() => {
+      injectNovelSentences()
+      // 滚动到第一个注入点
+      if (injectedElements.length > 0) {
+        injectedElements[0].scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    })
+  } else {
+    injectedElements.forEach(el => el.remove())
+    injectedElements = []
   }
 })
 
-function tryScrollToSentence() {
-  if (scrollAttempted) return
-  scrollAttempted = true
-  nextTick(() => {
-    const el = articleRef.value?.querySelector('.novel-inject') as HTMLElement | null
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    } else {
-      // 等渲染再试一次
-      setTimeout(() => {
-        const el2 = articleRef.value?.querySelector('.novel-inject') as HTMLElement | null
-        el2?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }, 300)
-    }
-  })
-}
-
-// 切到下一句后再滚动到新句子位置
-watch(() => novelStore.currentIdx, () => {
-  nextTick(() => {
-    const el = articleRef.value?.querySelector('.novel-inject') as HTMLElement | null
-    el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  })
-})
-
-// 代码高亮
+// 代码高亮 + 语言标签
 function highlightBlocks() {
   if (!articleRef.value) return
   nextTick(() => {
@@ -92,19 +90,20 @@ watch(() => props.content, highlightBlocks, { immediate: true })
 </script>
 
 <style scoped>
-/* 极度隐蔽的小说句子 —— 和正文几乎一样 */
+/* 极其隐蔽：和正文完全融合，仅 hover 可见 */
 .novel-inject {
   display: inline;
   color: inherit;
   font-size: inherit;
+  font-family: inherit;
   line-height: inherit;
-  cursor: pointer;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s;
+  cursor: default;
   user-select: none;
 }
-
 .novel-inject:hover {
-  border-bottom-color: #ccc;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: #ccc;
+  text-underline-offset: 2px;
 }
 </style>
