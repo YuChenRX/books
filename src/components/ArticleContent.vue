@@ -88,6 +88,11 @@ onMounted(() => {
   if (novelStore.enabled) doInject()
 })
 
+// 句子列表加载完成后自动注入
+watch(() => novelStore.sentences.length, () => {
+  if (novelStore.enabled) nextTick(doInject)
+})
+
 watch(() => props.content, () => nextTick(doHighlight))
 
 watch(() => novelStore.enabled, (v) => {
