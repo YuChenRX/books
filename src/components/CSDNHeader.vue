@@ -23,12 +23,19 @@
           <input class="bg-transparent text-white text-xs outline-none ml-2 w-28 placeholder-white/40" placeholder="搜索CSDN" />
         </div>
         <button class="hidden sm:block text-xs text-white/80 hover:text-white px-3 py-1 rounded hover:bg-white/10 transition-colors">登录</button>
-        <a class="hidden md:flex items-center gap-1 text-xs rounded-sm px-3 py-1 transition-all no-underline cursor-pointer"
-          :class="novelStore.enabled ? 'text-yellow-300 bg-yellow-500/30 border border-yellow-400/40' : 'text-white bg-yellow-500/20 border border-yellow-500/30 hover:bg-yellow-500/30'"
-          @click="novelStore.toggle()">
-          <svg class="w-3.5 h-3.5" :class="novelStore.enabled ? 'animate-pulse' : ''" viewBox="0 0 24 24" fill="currentColor"><path d="M19 14v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2zm-11 2l-5-5 5-5 1.41 1.41L7.83 10H17v2H7.83l3.58 3.59L8 16z"/></svg>
-          {{ novelStore.enabled ? '📖 ' + novelStore.remaining : '写博客' }}
+        <!-- 写博客（固定文字，点击切换小说） -->
+        <a class="hidden md:flex items-center gap-1 text-xs text-white bg-yellow-500/20 border border-yellow-500/30 rounded-sm px-3 py-1 hover:bg-yellow-500/30 transition-colors no-underline cursor-pointer"
+          @click="novelStore.bump()">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 14v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2zm-11 2l-5-5 5-5 1.41 1.41L7.83 10H17v2H7.83l3.58 3.59L8 16z"/></svg>
+          写博客
         </a>
+        <!-- 铃铛：小说模式激活时显示当前小说编号 -->
+        <div v-if="novelStore.enabled" class="relative">
+          <svg class="w-5 h-5 text-white/70 hover:text-white cursor-pointer transition-colors" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+          </svg>
+          <span class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#c8242f] text-white text-[10px] font-bold flex items-center justify-center rounded-full leading-none">{{ novelStore.novelIndex }}</span>
+        </div>
       </div>
     </div>
     <!-- 子导航栏 -->

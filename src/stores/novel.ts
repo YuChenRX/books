@@ -7,6 +7,7 @@ interface Progress {
   currentIdx: number
   enabled: boolean
   novelFile: string
+  novelIndex: number  // 第几本小说（仅计数）
 }
 
 function loadProgress(): Progress {
@@ -14,7 +15,7 @@ function loadProgress(): Progress {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) return JSON.parse(raw)
   } catch { /* */ }
-  return { currentIdx: 0, enabled: false, novelFile: '/novel/无职转生.html' }
+  return { currentIdx: 0, enabled: false, novelFile: '/novel/无职转生.html', novelIndex: 0 }
 }
 
 function saveProgress(p: Progress) {
@@ -28,15 +29,14 @@ export const useNovelStore = defineStore('novel', () => {
   const sentences = ref<string[]>([])
   const currentIdx = ref(init.enabled ? init.currentIdx : 0)
   const novelFile = ref(init.novelFile)
+  const novelIndex = ref(init.novelIndex)
   const novelTitle = ref('')
   const loading = ref(false)
 
-  // 持久化进度
-  watch([enabled, currentIdx, novelFile], () => {
-    saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value, novelFile: novelFile.value })
+  watch([enabled, currentIdx, novelFile, novelIndex], () => {
+    saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value, novelFile: novelFile.value, novelIndex: novelIndex.value })
   }, { deep: true })
 
-  /** 从小说 HTML 解析短句 */
   async function loadNovel(url?: string) {
     const target = url || novelFile.value
     loading.value = true
@@ -53,45 +53,50 @@ export const useNovelStore = defineStore('novel', () => {
       })
       sentences.value = short
       novelTitle.value = (doc.querySelector('title')?.textContent || '').replace(' - 在线阅读', '')
-      // 如果进度超了则重置
       if (currentIdx.value >= short.length) currentIdx.value = 0
     } catch (e) {
-      console.error('小说加载失败:', e)
+      console.error('novel load fail:', e)
       sentences.value = []
     }
     loading.value = false
   }
 
-  /** 切换开关 */
-  function toggle() {
-    enabled.value = !enabled.value
-    if (enabled.value) {
+  /** 点击"写博客"——激活/切换到下一本小说 */
+  function bump() {
+    if (!enabled.value) {
+      // 首次激活
+      enabled.value = true
+      novelIndex.value = 1
+      currentIdx.value = 0
       if (sentences.value.length === 0) loadNovel()
     } else {
-      // 关闭时保存进度
-      saveProgress({ currentIdx: currentIdx.value, enabled: false, novelFile: novelFile.value })
+      // 切换到下一本（重置进度）
+      novelIndex.value++
+      currentIdx.value = 0
+      if (sentences.value.length === 0) loadNovel()
     }
+    saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value, novelFile: novelFile.value, novelIndex: novelIndex.value })
   }
 
   function currentSentence(): string | null {
     return currentIdx.value < sentences.value.length ? sentences.value[currentIdx.value] : null
   }
 
+  /** 点击句子推进 */
   function nextSentence(): string | null {
     if (currentIdx.value < sentences.value.length) {
       const s = sentences.value[currentIdx.value++]
-      saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value, novelFile: novelFile.value })
+      saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value, novelFile: novelFile.value, novelIndex: novelIndex.value })
       return s
     }
     enabled.value = false
     return null
   }
 
-  /** 剩余句子数 */
   const remaining = computed(() => Math.max(0, sentences.value.length - currentIdx.value))
 
   return {
-    enabled, sentences, currentIdx, novelFile, novelTitle, loading,
-    loadNovel, toggle, currentSentence, nextSentence, remaining
+    enabled, sentences, currentIdx, novelFile, novelIndex, novelTitle, loading,
+    loadNovel, bump, currentSentence, nextSentence, remaining
   }
 })

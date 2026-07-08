@@ -50,7 +50,14 @@ function injectNovelSentences() {
 
     paragraphs[idx].after(span)
     injectedElements.push(span)
-    novelStore.nextSentence() // 推进到下一句
+    novelStore.nextSentence()
+  }
+
+  // 注入后滚动到第一个句子
+  if (injectedElements.length > 0) {
+    setTimeout(() => {
+      injectedElements[0].scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 100)
   }
 }
 
@@ -59,10 +66,6 @@ watch(() => novelStore.enabled, (val) => {
   if (val) {
     nextTick(() => {
       injectNovelSentences()
-      // 滚动到第一个注入点
-      if (injectedElements.length > 0) {
-        injectedElements[0].scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
     })
   } else {
     injectedElements.forEach(el => el.remove())
