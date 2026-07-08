@@ -14,7 +14,7 @@
           <!-- 标题 -->
           <div class="px-6 pt-6 pb-2">
             <div class="flex items-start gap-2">
-              <span class="text-[11px] bg-[#c8242f] text-white px-1.5 py-0.5 rounded-sm font-bold shrink-0 mt-1">原</span>
+              <span class="csdn-original-badge shrink-0 mt-1">原</span>
               <h1 class="text-2xl font-bold leading-snug" style="color: var(--csdn-text)">{{ article?.title }}</h1>
             </div>
             <div class="flex items-center gap-4 mt-4 text-sm text-gray-400 flex-wrap">

@@ -58,7 +58,7 @@
             @click="$router.push(`/article/${art.id}`)">
             <div class="p-5">
               <div class="flex items-start gap-1">
-                <span class="text-[11px] bg-[#c8242f] text-white px-1.5 py-0.5 rounded-sm font-bold shrink-0 mt-1">原</span>
+                <span class="csdn-original-badge shrink-0 mt-1">原</span>
                 <h2 class="text-lg font-bold leading-snug group-hover:text-[#c8242f] transition-colors" style="color: var(--csdn-text)">
                   {{ art.title }}
                 </h2>

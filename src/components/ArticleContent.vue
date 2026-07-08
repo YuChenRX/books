@@ -16,10 +16,20 @@ function highlightBlocks() {
   if (!articleRef.value) return
   nextTick(() => {
     articleRef.value!.querySelectorAll('pre code').forEach(block => {
+      const el = block as HTMLElement
       try {
-        hljs.highlightElement(block as HTMLElement)
-      } catch (e) {
-        // ignore highlight errors
+        hljs.highlightElement(el)
+      } catch (e) { /* ignore */ }
+
+      // 提取语言标识加到 <pre> 上
+      const pre = el.parentElement
+      if (pre && !pre.hasAttribute('data-lang')) {
+        const langClass = [...el.classList].find(c => c.startsWith('language-'))
+        if (langClass) {
+          pre.setAttribute('data-lang', langClass.replace('language-', ''))
+        } else if (el.getAttribute('data-language')) {
+          pre.setAttribute('data-lang', el.getAttribute('data-language')!)
+        }
       }
     })
   })
