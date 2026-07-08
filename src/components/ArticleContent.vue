@@ -1,17 +1,15 @@
 <template>
   <div ref="articleRef" class="csdn-article px-6 py-4">
     <template v-for="(seg, i) in segments" :key="i">
-      <div class="seg-wrapper" :class="{ 'novel-inserted': novelStore.enabled }">
+      <div class="seg-wrapper">
         <div v-html="seg"></div>
-        <!-- 小说句子注入位 -->
-        <div
+        <!-- 极度隐蔽的小说句子 -->
+        <span
           v-if="novelStore.enabled && shouldInsert(i) && novelSentence"
-          class="novel-sentence"
+          ref="sentenceRef"
+          class="novel-inject"
           @click="handleClick"
-        >
-          <span class="novel-text">「{{ novelSentence }}」</span>
-          <span class="novel-arrow">▶</span>
-        </div>
+        >{{ novelSentence }}</span>
       </div>
     </template>
   </div>
@@ -25,24 +23,54 @@ import { useNovelStore } from '@/stores/novel'
 
 const props = defineProps<{ content: string }>()
 const articleRef = ref<HTMLElement | null>(null)
+const sentenceRef = ref<HTMLElement | null>(null)
 const novelStore = useNovelStore()
 
-// 按换行分割成片段（原文用 .join("\n") 构建）
-const segments = computed(() => {
-  return props.content.split('\n').filter(s => s.trim())
-})
+const segments = computed(() => props.content.split('\n').filter(s => s.trim()))
 
-// 是否在片段后插入小说句子：非最后一段、小说模式开启
 function shouldInsert(index: number): boolean {
   return index < segments.value.length - 1
 }
 
-// 当前小说句子
 const novelSentence = computed(() => novelStore.currentSentence())
 
 function handleClick() {
   novelStore.nextSentence()
 }
+
+// 激活时自动滚动到第一个句子
+let scrollAttempted = false
+watch(() => novelStore.enabled, (val) => {
+  if (val) {
+    scrollAttempted = false
+    tryScrollToSentence()
+  }
+})
+
+function tryScrollToSentence() {
+  if (scrollAttempted) return
+  scrollAttempted = true
+  nextTick(() => {
+    const el = articleRef.value?.querySelector('.novel-inject') as HTMLElement | null
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    } else {
+      // 等渲染再试一次
+      setTimeout(() => {
+        const el2 = articleRef.value?.querySelector('.novel-inject') as HTMLElement | null
+        el2?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 300)
+    }
+  })
+}
+
+// 切到下一句后再滚动到新句子位置
+watch(() => novelStore.currentIdx, () => {
+  nextTick(() => {
+    const el = articleRef.value?.querySelector('.novel-inject') as HTMLElement | null
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  })
+})
 
 // 代码高亮
 function highlightBlocks() {
@@ -64,51 +92,19 @@ watch(() => props.content, highlightBlocks, { immediate: true })
 </script>
 
 <style scoped>
-.seg-wrapper {
-  position: relative;
-}
-
-/* 小说句子卡片样式 */
-.novel-sentence {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  margin: 8px 0;
-  background: #fef7e0;
-  border: 1px dashed #e8c84a;
-  border-radius: 4px;
+/* 极度隐蔽的小说句子 —— 和正文几乎一样 */
+.novel-inject {
+  display: inline;
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
   cursor: pointer;
-  transition: all 0.2s;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
   user-select: none;
-  font-size: 14px;
-  color: #b8860b;
 }
 
-.novel-sentence:hover {
-  background: #fdf0c0;
-  border-color: #d4a830;
-  transform: translateX(4px);
-}
-
-.novel-text {
-  flex: 1;
-  line-height: 1.6;
-}
-
-.novel-arrow {
-  font-size: 10px;
-  color: #c8a030;
-  opacity: 0.6;
-  flex-shrink: 0;
-}
-
-/* 高亮效果：小说激活时文章段落变淡 */
-.seg-wrapper.novel-inserted {
-  transition: opacity 0.3s;
-}
-
-.seg-wrapper.novel-inserted:hover {
-  opacity: 0.85;
+.novel-inject:hover {
+  border-bottom-color: #ccc;
 }
 </style>

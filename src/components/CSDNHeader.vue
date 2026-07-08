@@ -3,7 +3,7 @@
     <!-- 主栏 -->
     <div class="max-w-[1200px] mx-auto flex items-center h-[50px] px-4">
       <!-- CSDN 红底白字 Logo -->
-      <a href="/" class="flex items-center gap-1 no-underline mr-5" @dblclick.prevent="$router.push('/novel-config')">
+      <a href="/" class="flex items-center gap-1 no-underline mr-5">
         <span class="inline-flex items-center justify-center w-[54px] h-[28px] bg-[#c8242f] rounded-[3px] text-white text-[15px] font-bold tracking-wider" style="font-family: Arial, sans-serif;">CSDN</span>
         <span class="text-white/90 text-[13px] font-medium hidden sm:inline">博客</span>
       </a>
@@ -23,9 +23,11 @@
           <input class="bg-transparent text-white text-xs outline-none ml-2 w-28 placeholder-white/40" placeholder="搜索CSDN" />
         </div>
         <button class="hidden sm:block text-xs text-white/80 hover:text-white px-3 py-1 rounded hover:bg-white/10 transition-colors">登录</button>
-        <a class="hidden md:flex items-center gap-1 text-xs text-white bg-yellow-500/20 border border-yellow-500/30 rounded-sm px-3 py-1 hover:bg-yellow-500/30 transition-colors no-underline" href="#">
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 14v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2zm-11 2l-5-5 5-5 1.41 1.41L7.83 10H17v2H7.83l3.58 3.59L8 16z"/></svg>
-          写博客
+        <a class="hidden md:flex items-center gap-1 text-xs rounded-sm px-3 py-1 transition-all no-underline cursor-pointer"
+          :class="novelStore.enabled ? 'text-yellow-300 bg-yellow-500/30 border border-yellow-400/40' : 'text-white bg-yellow-500/20 border border-yellow-500/30 hover:bg-yellow-500/30'"
+          @click="novelStore.toggle()">
+          <svg class="w-3.5 h-3.5" :class="novelStore.enabled ? 'animate-pulse' : ''" viewBox="0 0 24 24" fill="currentColor"><path d="M19 14v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2zm-11 2l-5-5 5-5 1.41 1.41L7.83 10H17v2H7.83l3.58 3.59L8 16z"/></svg>
+          {{ novelStore.enabled ? '📖 ' + novelStore.remaining : '写博客' }}
         </a>
       </div>
     </div>
@@ -46,5 +48,8 @@
 </template>
 
 <script setup lang="ts">
+import { useNovelStore } from '@/stores/novel'
+
+const novelStore = useNovelStore()
 const navItems = ['博客', '下载', '学习', '社区', 'GitCode', '猿如意']
 </script>

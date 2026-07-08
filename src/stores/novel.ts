@@ -1,83 +1,97 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+
+const STORAGE_KEY = 'books_novel_progress'
+
+interface Progress {
+  currentIdx: number
+  enabled: boolean
+  novelFile: string
+}
+
+function loadProgress(): Progress {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (raw) return JSON.parse(raw)
+  } catch { /* */ }
+  return { currentIdx: 0, enabled: false, novelFile: '/novel/无职转生.html' }
+}
+
+function saveProgress(p: Progress) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)) } catch { /* */ }
+}
 
 export const useNovelStore = defineStore('novel', () => {
-  const enabled = ref(false)
+  const init = loadProgress()
+
+  const enabled = ref(init.enabled)
   const sentences = ref<string[]>([])
-  const currentIdx = ref(0)
+  const currentIdx = ref(init.enabled ? init.currentIdx : 0)
+  const novelFile = ref(init.novelFile)
   const novelTitle = ref('')
-  const novelFile = ref('/novel/无职转生.html')
   const loading = ref(false)
 
-  /** 从小说 HTML 中解析 ≤20 字的句子 */
+  // 持久化进度
+  watch([enabled, currentIdx, novelFile], () => {
+    saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value, novelFile: novelFile.value })
+  }, { deep: true })
+
+  /** 从小说 HTML 解析短句 */
   async function loadNovel(url?: string) {
     const target = url || novelFile.value
     loading.value = true
     try {
       const res = await fetch(target)
       const html = await res.text()
-      const parser = new DOMParser()
-      const doc = parser.parseFromString(html, 'text/html')
-
-      // 提取所有段落文本
-      const paragraphs = doc.querySelectorAll('.chapter-body p')
-      const allText = Array.from(paragraphs).map(p => p.textContent || '').join('')
-
-      // 按标点分割句子
-      const raw = allText.split(/[。！？\n；]/).map(s => s.trim()).filter(s => s.length > 0)
-
-      // 只保留 ≤20 个汉字的短句
+      const doc = new DOMParser().parseFromString(html, 'text/html')
+      const ps = doc.querySelectorAll('.chapter-body p')
+      const text = Array.from(ps).map(p => p.textContent || '').join('')
+      const raw = text.split(/[。！？\n；]/).map(s => s.trim()).filter(Boolean)
       const short = raw.filter(s => {
-        // 只统计汉字/字母数字的个数（排除空格标点）
-        const charLen = [...s].filter(c => c.match(/[\u4e00-\u9fff\w]/)).length
-        return charLen >= 2 && charLen <= 20
+        const len = [...s].filter(c => c.match(/[\u4e00-\u9fff\w]/)).length
+        return len >= 2 && len <= 20
       })
-
       sentences.value = short
-      currentIdx.value = 0
-      novelTitle.value = (doc.querySelector('title')?.textContent || '未知小说').replace(' - 在线阅读', '')
+      novelTitle.value = (doc.querySelector('title')?.textContent || '').replace(' - 在线阅读', '')
+      // 如果进度超了则重置
+      if (currentIdx.value >= short.length) currentIdx.value = 0
     } catch (e) {
-      console.error('❌ 小说加载失败:', e)
+      console.error('小说加载失败:', e)
       sentences.value = []
     }
     loading.value = false
   }
 
+  /** 切换开关 */
   function toggle() {
     enabled.value = !enabled.value
-    if (enabled.value && sentences.value.length === 0) {
-      loadNovel()
+    if (enabled.value) {
+      if (sentences.value.length === 0) loadNovel()
+    } else {
+      // 关闭时保存进度
+      saveProgress({ currentIdx: currentIdx.value, enabled: false, novelFile: novelFile.value })
     }
   }
 
-  /** 获取当前句子（不推进） */
   function currentSentence(): string | null {
-    return currentIdx.value < sentences.value.length
-      ? sentences.value[currentIdx.value]
-      : null
+    return currentIdx.value < sentences.value.length ? sentences.value[currentIdx.value] : null
   }
 
-  /** 推进到下一句并返回 */
   function nextSentence(): string | null {
     if (currentIdx.value < sentences.value.length) {
-      return sentences.value[currentIdx.value++]
+      const s = sentences.value[currentIdx.value++]
+      saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value, novelFile: novelFile.value })
+      return s
     }
-    // 播完了可以重置或返回 null
     enabled.value = false
     return null
   }
 
-  /** 当前进度 */
-  const progress = computed(() => ({
-    current: currentIdx.value,
-    total: sentences.value.length,
-    pct: sentences.value.length > 0
-      ? Math.round((currentIdx.value / sentences.value.length) * 100)
-      : 0
-  }))
+  /** 剩余句子数 */
+  const remaining = computed(() => Math.max(0, sentences.value.length - currentIdx.value))
 
   return {
-    enabled, sentences, currentIdx, novelTitle, novelFile, loading,
-    loadNovel, toggle, currentSentence, nextSentence, progress
+    enabled, sentences, currentIdx, novelFile, novelTitle, loading,
+    loadNovel, toggle, currentSentence, nextSentence, remaining
   }
 })
