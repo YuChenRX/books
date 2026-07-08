@@ -100,9 +100,17 @@ watch(() => novelStore.enabled, (v) => {
   else { injectedElements.forEach(e => e.remove()); injectedElements = [] }
 })
 
-watch(() => novelStore.scrollTick, () => nextTick(() => {
-  articleRef.value?.querySelector('.novel-inject')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-}))
+watch(() => novelStore.scrollTick, () => {
+  // 优先用已注入元素的引用，查不到就尝试注入后再滚动
+  if (injectedElements.length > 0) {
+    nextTick(() => injectedElements[0].scrollIntoView({ behavior: 'smooth', block: 'center' }))
+  } else if (novelStore.enabled) {
+    nextTick(() => {
+      doInject()
+      // doInject 内部已有 scrollIntoView
+    })
+  }
+})
 </script>
 
 <style>
