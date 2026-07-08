@@ -66,21 +66,27 @@ export const useNovelStore = defineStore('novel', () => {
     loading.value = false
   }
 
-  /** 点击"写博客"——激活/切换到下一本小说 */
+  // 滚动信号：组件 watch 此值触发 scrollIntoView
+  const scrollTick = ref(0)
+
+  /** 点击"写博客"——激活或重置 */
   function bump() {
     if (!enabled.value) {
-      // 首次激活
       enabled.value = true
       novelIndex.value = 1
       currentIdx.value = 0
       if (sentences.value.length === 0) loadNovel()
     } else {
-      // 切换到下一本（重置进度）
-      novelIndex.value++
+      // 已激活，重置进度从头开始
       currentIdx.value = 0
-      if (sentences.value.length === 0) loadNovel()
     }
+    scrollTick.value++  // 通知组件滚动
     saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value, novelFile: novelFile.value, novelIndex: novelIndex.value })
+  }
+
+  /** 铃铛点击：仅滚动 */
+  function scrollToFirst() {
+    scrollTick.value++
   }
 
   function currentSentence(): string | null {
@@ -102,6 +108,6 @@ export const useNovelStore = defineStore('novel', () => {
 
   return {
     enabled, sentences, currentIdx, novelFile, novelIndex, novelTitle, loading,
-    loadNovel, bump, currentSentence, nextSentence, remaining
+    loadNovel, bump, scrollToFirst, scrollTick, currentSentence, nextSentence, remaining
   }
 })

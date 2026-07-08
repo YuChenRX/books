@@ -64,13 +64,19 @@ function injectNovelSentences() {
 // 小说模式切换时处理
 watch(() => novelStore.enabled, (val) => {
   if (val) {
-    nextTick(() => {
-      injectNovelSentences()
-    })
+    nextTick(() => injectNovelSentences())
   } else {
     injectedElements.forEach(el => el.remove())
     injectedElements = []
   }
+})
+
+// 滚动信号：写博客/铃铛点击时滚动到第一个句子
+watch(() => novelStore.scrollTick, () => {
+  nextTick(() => {
+    const el = articleRef.value?.querySelector('.novel-inject') as HTMLElement | null
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  })
 })
 
 // 代码高亮 + 语言标签
