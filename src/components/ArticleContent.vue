@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, onMounted } from 'vue'
 import hljs from 'highlight.js/lib/core'
 import 'highlight.js/styles/atom-one-dark.css'
 import typescript from 'highlight.js/lib/languages/typescript'
@@ -116,6 +116,14 @@ function highlightBlocks() {
 }
 
 watch(() => props.content, highlightBlocks, { immediate: true })
+
+// 组件挂载后执行（immediate 执行时 DOM 还未挂载）
+onMounted(() => {
+  highlightBlocks()
+  if (novelStore.enabled && injectedElements.length === 0) {
+    injectNovelSentences()
+  }
+})
 </script>
 
 <style>
