@@ -3,283 +3,192 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>无职转生 - 在线阅读</title>
+  <title>无职转生 - 理不尽な孫の手</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 16px; scroll-behavior: smooth; }
     body {
-      font-family: -apple-system, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", serif;
-      background: #f5f0eb;
-      color: #2c2c2c;
-      line-height: 1.9;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      background: #f8f8f8;
+      color: #333;
+      line-height: 1.8;
     }
 
-    /* ── 顶栏 ── */
-    .top-bar {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(245,240,235,0.92);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid #e0d8d0;
-      padding: 12px 20px;
-      display: flex; align-items: center; gap: 16px;
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px 20px 60px;
     }
-    .top-bar h1 {
-      font-size: 18px; font-weight: 600;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .top-bar .meta { font-size: 13px; color: #888; white-space: nowrap; }
-    .top-bar .toc-toggle {
-      margin-left: auto;
-      padding: 6px 14px; font-size: 13px;
-      background: #c8242f; color: #fff; border: none; border-radius: 4px;
-      cursor: pointer;
-    }
-    .top-bar .toc-toggle:hover { background: #a11d26; }
 
-    /* ── 目录浮层 ── */
-    .toc-overlay {
-      display: none;
-      position: fixed; inset: 0; z-index: 200;
-      background: rgba(0,0,0,0.4);
+    /* 书头 */
+    .header {
+      text-align: center;
+      padding: 30px 0;
+      border-bottom: 2px solid #e0d8d0;
+      margin-bottom: 30px;
     }
-    .toc-overlay.open { display: block; }
-    .toc-panel {
-      position: fixed; top: 0; left: 0; bottom: 0; width: 300px; max-width: 80vw;
-      background: #fff; overflow-y: auto; z-index: 210;
-      transform: translateX(-100%); transition: transform 0.25s ease;
-      box-shadow: 2px 0 16px rgba(0,0,0,0.1);
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 2px;
     }
-    .toc-overlay.open .toc-panel { transform: translateX(0); }
-    .toc-panel h2 {
-      padding: 20px 20px 12px; font-size: 16px; font-weight: 600; color: #333;
+    .header .author {
+      margin-top: 8px;
+      font-size: 15px;
+      color: #888;
+    }
+    .header .meta {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    /* 封面 */
+    .cover-wrap {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .cover {
+      max-width: 260px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    /* 章节列表 */
+    .chapter-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .chapter-item {
+      background: #fff;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .chapter-title {
+      margin: 0 0 12px;
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      padding-bottom: 10px;
       border-bottom: 1px solid #eee;
     }
-    .toc-panel ul { list-style: none; padding: 8px 0; }
-    .toc-panel li a {
-      display: block; padding: 10px 20px; font-size: 14px; color: #555;
-      text-decoration: none; border-bottom: 1px solid #f5f5f5;
-      transition: background 0.15s;
+    .chapter-body p {
+      margin: 0 0 0.6em;
+      text-indent: 2em;
+      font-size: 16px;
+      letter-spacing: 0.3px;
     }
-    .toc-panel li a:hover { background: #f5f0eb; color: #c8242f; }
-    .toc-close {
-      position: absolute; top: 16px; right: 16px;
-      font-size: 22px; color: #999; cursor: pointer; line-height: 1;
-    }
-    .toc-close:hover { color: #333; }
-
-    /* ── 书籍信息卡 ── */
-    .book-info {
-      max-width: 680px; margin: 40px auto 20px; padding: 0 20px;
-      text-align: center;
-    }
-    .book-info h1 { font-size: 28px; font-weight: 700; color: #1a1a1a; letter-spacing: 2px; }
-    .book-info .author { margin-top: 8px; font-size: 15px; color: #888; }
-    .book-info .stats { margin-top: 12px; font-size: 13px; color: #aaa; }
-    .book-info .stats span { margin: 0 8px; }
-
-    /* ── 章节 ── */
-    main { max-width: 680px; margin: 0 auto; padding: 0 20px 80px; }
-    .chapter { margin-top: 40px; }
-    .chapter:first-of-type { margin-top: 0; }
-    .chapter-title {
-      font-size: 22px; font-weight: 700; text-align: center;
-      color: #1a1a1a; margin-bottom: 24px; letter-spacing: 2px;
-      padding-bottom: 16px;
-      border-bottom: 2px solid #e0d8d0;
-    }
-    .chapter .content p {
-      text-indent: 2em; margin-bottom: 0.6em;
-      font-size: 16px; letter-spacing: 0.5px;
-    }
-    .chapter-end {
-      text-align: center; color: #ccc; margin: 36px 0; font-size: 14px;
-      letter-spacing: 4px;
+    .chapter-body p:last-child {
+      margin-bottom: 0;
     }
 
-    /* ── 底部 ── */
+    /* 底部 */
     .footer {
-      max-width: 680px; margin: 0 auto; padding: 20px;
-      text-align: center; font-size: 12px; color: #bbb;
-      border-top: 1px solid #e0d8d0;
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: #ccc;
     }
 
-    /* ── 响应式 ── */
     @media (max-width: 640px) {
-      .top-bar h1 { font-size: 15px; }
-      .top-bar .meta { display: none; }
-      .book-info h1 { font-size: 22px; }
-      .chapter-title { font-size: 18px; }
-      .chapter .content p { font-size: 15px; }
+      .container { padding: 16px 12px 40px; }
+      .header h1 { font-size: 22px; }
+      .chapter-title { font-size: 17px; }
+      .chapter-body p { font-size: 15px; }
+      .chapter-item { padding: 16px; }
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <div class="header">
+      <h1>无职转生</h1>
+      <p class="author">理不尽な孫の手</p>
+      <p class="meta">12 章 · 913+ 字</p>
+    </div>
 
-<!-- 顶栏 -->
-<header class="top-bar">
-  <h1>无职转生</h1>
-  <span class="meta">/ 理不尽な孫の手</span>
-  <button class="toc-toggle" onclick="toggleToc()">📖 目录</button>
-</header>
+    
 
-<!-- 目录浮层 -->
-<div id="toc-overlay" class="toc-overlay" onclick="closeToc(event)">
-  <nav class="toc-panel" onclick="event.stopPropagation()">
-    <span class="toc-close" onclick="closeToc()">✕</span>
-    <h2>📖 目录</h2>
-    <ul><li><a href="#ch-0">第一章</a></li>
-<li><a href="#ch-1">第二章</a></li>
-<li><a href="#ch-2">第三章</a></li>
-<li><a href="#ch-3">第四章</a></li>
-<li><a href="#ch-4">第五章</a></li>
-<li><a href="#ch-5">第六章</a></li>
-<li><a href="#ch-6">第七章</a></li>
-<li><a href="#ch-7">第八章</a></li>
-<li><a href="#ch-8">第九章</a></li>
-<li><a href="#ch-9">第十章</a></li>
-<li><a href="#ch-10">第十一章</a></li>
-<li><a href="#ch-11">第十二章</a></li></ul>
-  </nav>
-</div>
-
-<!-- 书籍信息 -->
-<div class="book-info">
-  <h1>无职转生</h1>
-  <p class="author">理不尽な孫の手</p>
-  <p class="stats">
-    <span>📄 12 章</span>
-    <span>📝 约 1.4千+ 字</span>
-  </p>
-</div>
-
-<!-- 正文 -->
-<main>
-  
-      <section id="ch-0" class="chapter">
-        <h2 class="chapter-title">第一章</h2>
-        <div class="content">
+    <ul class="chapter-list">
+    <li class="chapter-item">
+      <h2 class="chapter-title">1. 第一章</h2>
+      <div class="chapter-body">
           <p>「人生，是一场无法存档也无法读档的游戏。」这是我在临终前想出来的最后一句话。没错，我已经死了。三十四年的废柴人生，就这样结束了。没有留下任何成就，没有谈过恋爱，没有为任何人带来过幸福。只是庸庸碌碌地活着，然后简简单单地死去。</p>
-
-        </div>
-        <div class="chapter-end">◆ ◆ ◆</div>
-      </section>
-
-      <section id="ch-1" class="chapter">
-        <h2 class="chapter-title">第二章</h2>
-        <div class="content">
+      </div>
+    </li>
+    <li class="chapter-item">
+      <h2 class="chapter-title">2. 第二章</h2>
+      <div class="chapter-body">
           <p>当我睁开眼睛的时候，我看到了一个陌生的天花板。空气中弥漫着老旧木材和药草的气味，耳边传来壁炉燃烧的噼啪声。我试图坐起来，却发现自己的身体变得异常轻巧——那是一双属于幼童的手，纤细而柔嫩。我重生了？不，更准确地说，我是转生了。</p>
-
-        </div>
-        <div class="chapter-end">◆ ◆ ◆</div>
-      </section>
-
-      <section id="ch-2" class="chapter">
-        <h2 class="chapter-title">第三章</h2>
-        <div class="content">
-          <p>站在镜子面前，我看到了一张陌生的脸。墨绿色的头发，翠绿色的瞳孔，五官端正得不像话——这绝对不是我前世那张既不英俊也不丑陋的平庸面孔。我扯了扯嘴角，镜中的孩子也扯了扯嘴角。这就是我今后将在异世界度过余生的身体吗？我抬起右手，低声念道。</p>
-
-        </div>
-        <div class="chapter-end">◆ ◆ ◆</div>
-      </section>
-
-      <section id="ch-3" class="chapter">
-        <h2 class="chapter-title">第四章</h2>
-        <div class="content">
-          <p>在这个世界里，魔法是真实存在的。当我第一次感受到体内魔力的流动时，那种奇妙的感觉让我全身的汗毛都竖了起来。我的父亲是一位中级魔法师，他从我三岁开始就教我魔法的基础知识。让我吃惊的是，我在魔法方面似乎有着超乎寻常的天赋。</p>
-
-        </div>
-        <div class="chapter-end">◆ ◆ ◆</div>
-      </section>
-
-      <section id="ch-4" class="chapter">
-        <h2 class="chapter-title">第五章</h2>
-        <div class="content">
-          <p>希露菲叶特——这是她的名字，一个有着翠绿色长发和紫色眼眸的少女。她是我在这个世界遇到的第一个同龄朋友，也是第一个让我想要保护的人。她的笑容像春天的阳光一样温暖，让从小就习惯了孤独的我第一次感受到，被人需要原来是这样一件幸福的事情。</p>
-
-        </div>
-        <div class="chapter-end">◆ ◆ ◆</div>
-      </section>
-
-      <section id="ch-5" class="chapter">
-        <h2 class="chapter-title">第六章</h2>
-        <div class="content">
-          <p>转眼间，我已经来到这个世界五年了。从一个蹒跚学步的婴儿，成长为一个能够熟练运用多种魔法的少年。在洛琪希老师的指导下，我的魔法水平突飞猛进。她是我见过最优秀的魔法师，虽然她的身高看上去就像是个孩子，但她的魔法知识和经验堪称浩瀚。</p>
-
-        </div>
-        <div class="chapter-end">◆ ◆ ◆</div>
-      </section>
-
-      <section id="ch-6" class="chapter">
-        <h2 class="chapter-title">第七章</h2>
-        <div class="content">
-          <p>转移事件发生在那个命运般的夜晚。整座城市伴随着强光消失，数以万计的人被随机传送到了世界的各个角落。当眩目的光芒消散后，我发现自己独自一人站在一片完全陌生的森林中。周围没有父亲，没有母亲，没有希露菲。我第一次感受到了真正的恐惧。</p>
-
-        </div>
-        <div class="chapter-end">◆ ◆ ◆</div>
-      </section>
-
-      <section id="ch-7" class="chapter">
-        <h2 class="chapter-title">第八章</h2>
-        <div class="content">
-          <p>在被转移的恶魔大陆上，我遇到了瑞杰路德——一位传说中的斯佩路德族战士。他的种族因为曾经犯下的屠杀而被世人恐惧和憎恨，但他本人却是一位内心善良、重情重义的战士。瑞杰路德教会了我真正的战斗不是练习场上的切磋，而是生死之间的抉择。</p>
-
-        </div>
-        <div class="chapter-end">◆ ◆ ◆</div>
-      </section>
-
-      <section id="ch-8" class="chapter">
-        <h2 class="chapter-title">第九章</h2>
-        <div class="content">
-          <p>艾莉丝·伯雷亚斯·格雷拉特——一个红发的贵族大小姐，脾气暴躁得像一头狮子，但内心却比任何人都要单纯和炽热。从最初互相看不顺眼，到后来一起经历生死考验，跨越魔鬼沙漠，闯过原始森林，我们的羁绊在一次又一次的战斗中变得越来越深厚。</p>
-
-        </div>
-        <div class="chapter-end">◆ ◆ ◆</div>
-      </section>
-
-      <section id="ch-9" class="chapter">
-        <h2 class="chapter-title">第十章</h2>
-        <div class="content">
-          <p>在旅途的间隙，我时常思考一个问题：如果上天给了你第二次生命，你应该怎样度过？前世的我浪费了太多时间在悔恨和逃避上，这一世我不想再重蹈覆辙。保护想保护的人，完成想完成的事，不留遗憾地走完这段转生之旅。</p>
-
-        </div>
-        <div class="chapter-end">◆ ◆ ◆</div>
-      </section>
-
-      <section id="ch-10" class="chapter">
-        <h2 class="chapter-title">第十一章</h2>
-        <div class="content">
-          <p>人类、魔族、斯佩路德族、兽族……在这个世界上生活得越久，就越能理解到，种族和外表并不能决定一个人的本质。善与恶不是天生的，而是由每个人的经历和选择塑造的。这是我在旅途中学到的最重要的一课。</p>
-
-        </div>
-        <div class="chapter-end">◆ ◆ ◆</div>
-      </section>
-
-      <section id="ch-11" class="chapter">
-        <h2 class="chapter-title">第十二章</h2>
-        <div class="content">
+      </div>
+    </li>
+    <li class="chapter-item">
+      <h2 class="chapter-title">3. 第三章</h2>
+      <div class="chapter-body">
+          <p>站在镜子面前，我看到了一张陌生的脸。墨绿色的头发，翠绿色的瞳孔，五官端正得不像话——这绝对不是我前世那张既不英俊也不丑陋的平庸面孔。</p>
+      </div>
+    </li>
+    <li class="chapter-item">
+      <h2 class="chapter-title">4. 第四章</h2>
+      <div class="chapter-body">
+          <p>在这个世界里，魔法是真实存在的。当我第一次感受到体内魔力的流动时，那种奇妙的感觉让我全身的汗毛都竖了起来。我的父亲是一位中级魔法师，他从我三岁开始就教我魔法的基础知识。</p>
+      </div>
+    </li>
+    <li class="chapter-item">
+      <h2 class="chapter-title">5. 第五章</h2>
+      <div class="chapter-body">
+          <p>希露菲叶特——这是她的名字，一个有着翠绿色长发和紫色眼眸的少女。她是我在这个世界遇到的第一个同龄朋友，也是第一个让我想要保护的人。</p>
+      </div>
+    </li>
+    <li class="chapter-item">
+      <h2 class="chapter-title">6. 第六章</h2>
+      <div class="chapter-body">
+          <p>转眼间，我已经来到这个世界五年了。从一个蹒跚学步的婴儿，成长为一个能够熟练运用多种魔法的少年。在洛琪希老师的指导下，我的魔法水平突飞猛进。</p>
+      </div>
+    </li>
+    <li class="chapter-item">
+      <h2 class="chapter-title">7. 第七章</h2>
+      <div class="chapter-body">
+          <p>转移事件发生在那个命运般的夜晚。整座城市伴随着强光消失，数以万计的人被随机传送到了世界的各个角落。当眩目的光芒消散后，我发现自己独自一人站在一片完全陌生的森林中。</p>
+      </div>
+    </li>
+    <li class="chapter-item">
+      <h2 class="chapter-title">8. 第八章</h2>
+      <div class="chapter-body">
+          <p>在被转移的恶魔大陆上，我遇到了瑞杰路德——一位传说中的斯佩路德族战士。他的种族因为曾经犯下的屠杀而被世人恐惧和憎恨，但他本人却是一位内心善良的战士。</p>
+      </div>
+    </li>
+    <li class="chapter-item">
+      <h2 class="chapter-title">9. 第九章</h2>
+      <div class="chapter-body">
+          <p>艾莉丝·伯雷亚斯·格雷拉特——一个红发的贵族大小姐，脾气暴躁得像一头狮子，但内心却比任何人都要单纯和炽热。</p>
+      </div>
+    </li>
+    <li class="chapter-item">
+      <h2 class="chapter-title">10. 第十章</h2>
+      <div class="chapter-body">
+          <p>在旅途的间隙，我时常思考一个问题：如果上天给了你第二次生命，你应该怎样度过？前世的我浪费了太多时间在悔恨和逃避上，这一世我不想再重蹈覆辙。</p>
+      </div>
+    </li>
+    <li class="chapter-item">
+      <h2 class="chapter-title">11. 第十一章</h2>
+      <div class="chapter-body">
+          <p>人类、魔族、斯佩路德族、兽族……在这个世界上生活得越久，就越能理解到，种族和外表并不能决定一个人的本质。</p>
+      </div>
+    </li>
+    <li class="chapter-item">
+      <h2 class="chapter-title">12. 第十二章</h2>
+      <div class="chapter-body">
           <p>旅程还在继续。前方的路或许充满艰难险阻，但我知道自己不再是一个人了。有并肩作战的伙伴，有需要守护的人，有想要达到的目标。这——就是我无怨无悔的转生之旅。</p>
-        </div>
-        
-      </section>
-</main>
+      </div>
+    </li>
+    </ul>
 
-<div class="footer">
-  <p>Generated by novel-to-html · 阅读模式</p>
-</div>
-
-<script>
-function toggleToc() {
-  document.getElementById("toc-overlay").classList.toggle("open");
-}
-function closeToc(e) {
-  if (!e || e.target === e.currentTarget) {
-    document.getElementById("toc-overlay").classList.remove("open");
-  }
-}
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") closeToc();
-});
-</script>
-
+    <div class="footer">Generated by novel-to-html</div>
+  </div>
 </body>
 </html>
