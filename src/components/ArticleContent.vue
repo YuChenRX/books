@@ -97,12 +97,18 @@ watch(() => store.scrollTick, () => {
 
 <style>
 .novel-inject {
-  display: inline; color: inherit; font-size: inherit;
-  font-family: inherit; line-height: inherit;
-  cursor: default; user-select: none;
+  display: inline;
+  color: #b0a090;
+  font-size: 14px;
+  font-style: italic;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px dotted #d0c8b8;
+  margin: 0 2px;
+  transition: color 0.2s;
 }
 .novel-inject:hover {
-  cursor: pointer; text-decoration: underline;
-  text-decoration-color: #ccc; text-underline-offset: 2px;
+  color: #c8242f;
+  border-bottom-color: #c8242f;
 }
 </style>
