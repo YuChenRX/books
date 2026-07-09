@@ -66,15 +66,7 @@ function inject() {
   for (const idx of bps) {
     if (idx >= ps.length) { console.log(`  ⚠️ buryPoint ${idx} 超出段落数 ${ps.length}`); continue }
     const s = store.currentSentence()
-    if (!s) {
-      if (store.sentences.length === 0) {
-        console.log('  ⏳ 句子还未加载，500ms 后重试')
-        setTimeout(() => inject(), 500)
-      } else {
-        console.log('  ⏳ 句子已播完')
-      }
-      break
-    }
+    if (!s) { console.log('  ⏳ 句子已播完'); break }
     const sp = document.createElement('span')
     sp.className = 'novel-inject'
     sp.textContent = s
@@ -89,17 +81,10 @@ function inject() {
 
 onMounted(() => { highlight(); if (store.enabled) inject() })
 
-// 句子加载完成后自动注入（loadNovel 异步）
-watch(() => store.sentences.length, () => {
-  if (store.enabled && store.currentSentence()) nextTick(inject)
-})
-
 watch(() => props.content, () => nextTick(highlight))
-watch(() => props.buryPoints, () => { if (store.enabled) nextTick(inject) })
 watch(() => store.enabled, v => v ? nextTick(inject) : (injected.forEach(x => x.remove()), injected = []))
 watch(() => store.scrollTick, () => {
   if (injected.length) nextTick(() => injected[0].scrollIntoView({ behavior: 'smooth', block: 'center' }))
-  else if (store.enabled) nextTick(inject)
 })
 </script>
 

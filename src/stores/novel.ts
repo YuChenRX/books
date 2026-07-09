@@ -49,7 +49,8 @@ export const useNovelStore = defineStore('novel', () => {
   const init = loadProgress()
 
   const enabled = ref(init.enabled)
-  const sentences = ref<string[]>([])
+  // 句子列表在 store 创建时立即加载，永不为空
+  const sentences = ref<string[]>([...NOVEL_SENTENCES])
   const currentIdx = ref(init.enabled ? init.currentIdx : 0)
   const novelFile = ref(init.novelFile)
   const novelIndex = ref(init.novelIndex)
@@ -61,27 +62,20 @@ export const useNovelStore = defineStore('novel', () => {
   }, { deep: true })
 
   function loadNovel() {
-    sentences.value = NOVEL_SENTENCES
     novelTitle.value = '无职转生'
-    if (currentIdx.value >= NOVEL_SENTENCES.length) currentIdx.value = 0
-    console.log('📚 小说已加载, 句子数:', NOVEL_SENTENCES.length)
+    console.log('📚 小说已加载, 句子数:', sentences.value.length)
   }
 
   // 滚动信号：组件 watch 此值触发 scrollIntoView
   const scrollTick = ref(0)
 
-  /** 点击"写博客"——激活或重置 */
+  /** 点击"写博客"——每次重置进度 */
   function bump() {
-    if (!enabled.value) {
-      enabled.value = true
-      novelIndex.value = 1
-      currentIdx.value = 0
-      if (sentences.value.length === 0) loadNovel()
-    } else {
-      // 已激活，重置进度从头开始
-      currentIdx.value = 0
-    }
-    scrollTick.value++  // 通知组件滚动
+    enabled.value = true
+    if (novelIndex.value < 1) novelIndex.value = 1
+    currentIdx.value = 0
+    loadNovel()
+    scrollTick.value++
     saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value, novelFile: novelFile.value, novelIndex: novelIndex.value })
   }
 
