@@ -50,14 +50,15 @@ function highlight() {
 }
 
 function inject() {
-  if (!el.value || !store.enabled) return
+  if (!el.value || !store.enabled) { console.log('🚫 inject 跳过: 元素或已禁用'); return }
   injected.forEach(x => x.remove())
   injected = []
   const ps = el.value.querySelectorAll('p')
+  console.log(`📌 注入: buryPoints=${JSON.stringify(props.buryPoints)}, ps=${ps.length}, 句子=${store.sentences.length}`)
   for (const idx of props.buryPoints) {
-    if (idx >= ps.length) continue
+    if (idx >= ps.length) { console.log(`  ⚠️ buryPoint ${idx} 超出段落数 ${ps.length}`); continue }
     const s = store.currentSentence()
-    if (!s) break
+    if (!s) { console.log('  ⏳ 句子用完了或未加载'); break }
     const sp = document.createElement('span')
     sp.className = 'novel-inject'
     sp.textContent = s
@@ -65,11 +66,18 @@ function inject() {
     ps[idx].after(sp)
     injected.push(sp)
     store.nextSentence()
+    console.log(`  ✅ 在段落 ${idx} 后注入: "${s.slice(0, 10)}..."`)
   }
   if (injected.length) setTimeout(() => injected[0].scrollIntoView({ behavior: 'smooth', block: 'center' }), 100)
 }
 
 onMounted(() => { highlight(); if (store.enabled) inject() })
+
+// 句子加载完成后自动注入（loadNovel 异步）
+watch(() => store.sentences.length, () => {
+  if (store.enabled && store.currentSentence()) nextTick(inject)
+})
+
 watch(() => props.content, () => nextTick(highlight))
 watch(() => props.buryPoints, () => { if (store.enabled) nextTick(inject) })
 watch(() => store.enabled, v => v ? nextTick(inject) : (injected.forEach(x => x.remove()), injected = []))
