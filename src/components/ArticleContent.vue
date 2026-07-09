@@ -1,5 +1,5 @@
 <template>
-  <div ref="articleRef" class="csdn-article px-6 py-4" v-html="content"></div>
+  <div ref="el" class="csdn-article px-6 py-4" v-html="content"></div>
 </template>
 
 <script setup lang="ts">
@@ -11,6 +11,7 @@ import javascript from 'highlight.js/lib/languages/javascript'
 import xml from 'highlight.js/lib/languages/xml'
 import css from 'highlight.js/lib/languages/css'
 import python from 'highlight.js/lib/languages/python'
+import { useNovelStore } from '@/stores/novel'
 
 hljs.registerLanguage('typescript', typescript)
 hljs.registerLanguage('javascript', javascript)
@@ -18,116 +19,74 @@ hljs.registerLanguage('xml', xml)
 hljs.registerLanguage('css', css)
 hljs.registerLanguage('python', python)
 
-import { useNovelStore } from '@/stores/novel'
+const props = defineProps<{
+  content: string
+  buryPoints: number[]
+}>()
 
-const props = defineProps<{ content: string }>()
-const articleRef = ref<HTMLElement | null>(null)
-const novelStore = useNovelStore()
-let injectedElements: HTMLElement[] = []
+const el = ref<HTMLElement | null>(null)
+const store = useNovelStore()
+let injected: HTMLElement[] = []
 
-function doHighlight() {
-  const el = articleRef.value
-  if (!el) return
-  el.querySelectorAll('pre code').forEach(block => {
-    const codeEl = block as HTMLElement
-    // 修复数据中字面量 \n 为真实换行
-    const raw = codeEl.textContent || ''
-    if (raw.includes('\\n')) {
-      codeEl.textContent = raw.replace(/\\n/g, '\n')
-    }
-    const hasLang = [...codeEl.classList].some(c => c.startsWith('language-'))
-    if (hasLang) {
-      try { hljs.highlightElement(codeEl) } catch {}
+function highlight() {
+  if (!el.value) return
+  el.value.querySelectorAll('pre code').forEach(b => {
+    const c = b as HTMLElement
+    if ([...c.classList].some(x => x.startsWith('language-'))) {
+      try { hljs.highlightElement(c) } catch {}
     } else {
       try {
-        const r = hljs.highlightAuto(codeEl.textContent || '')
-        codeEl.innerHTML = r.value
-        codeEl.classList.add('language-' + r.language)
+        const r = hljs.highlightAuto(c.textContent || '')
+        c.innerHTML = r.value
+        c.classList.add('language-' + r.language)
       } catch {}
     }
-    const pre = codeEl.parentElement
-    if (pre && !pre.hasAttribute('data-lang')) {
-      const langClass = [...codeEl.classList].find(c => c.startsWith('language-'))
-      if (langClass) pre.setAttribute('data-lang', langClass.replace('language-', ''))
+    const p = c.parentElement
+    if (p && !p.hasAttribute('data-lang')) {
+      const cls = [...c.classList].find(x => x.startsWith('language-'))
+      if (cls) p.setAttribute('data-lang', cls.replace('language-', ''))
     }
   })
 }
 
-function doInject() {
-  const el = articleRef.value
-  if (!el || !novelStore.enabled) return
-  injectedElements.forEach(e => e.remove())
-  injectedElements = []
-
-  const ps = el.querySelectorAll('p')
-  if (!ps.length) return
-  const count = Math.max(1, Math.floor(ps.length / 5))
-  const picks: number[] = []
-  while (picks.length < count) {
-    const idx = Math.floor(Math.random() * ps.length)
-    if (!picks.includes(idx)) picks.push(idx)
-  }
-  for (const idx of picks) {
-    const s = novelStore.currentSentence()
+function inject() {
+  if (!el.value || !store.enabled) return
+  injected.forEach(x => x.remove())
+  injected = []
+  const ps = el.value.querySelectorAll('p')
+  for (const idx of props.buryPoints) {
+    if (idx >= ps.length) continue
+    const s = store.currentSentence()
     if (!s) break
     const sp = document.createElement('span')
     sp.className = 'novel-inject'
     sp.textContent = s
-    sp.onclick = () => doInject()
+    sp.onclick = () => inject()
     ps[idx].after(sp)
-    injectedElements.push(sp)
-    novelStore.nextSentence()
+    injected.push(sp)
+    store.nextSentence()
   }
-  if (injectedElements.length) {
-    setTimeout(() => injectedElements[0].scrollIntoView({ behavior: 'smooth', block: 'center' }), 100)
-  }
+  if (injected.length) setTimeout(() => injected[0].scrollIntoView({ behavior: 'smooth', block: 'center' }), 100)
 }
 
-onMounted(() => {
-  doHighlight()
-  if (novelStore.enabled) doInject()
-})
-
-// 句子列表加载完成后自动注入
-watch(() => novelStore.sentences.length, () => {
-  if (novelStore.enabled) nextTick(doInject)
-})
-
-watch(() => props.content, () => nextTick(doHighlight))
-
-watch(() => novelStore.enabled, (v) => {
-  if (v) { nextTick(doInject) }
-  else { injectedElements.forEach(e => e.remove()); injectedElements = [] }
-})
-
-watch(() => novelStore.scrollTick, () => {
-  // 优先用已注入元素的引用，查不到就尝试注入后再滚动
-  if (injectedElements.length > 0) {
-    nextTick(() => injectedElements[0].scrollIntoView({ behavior: 'smooth', block: 'center' }))
-  } else if (novelStore.enabled) {
-    nextTick(() => {
-      doInject()
-      // doInject 内部已有 scrollIntoView
-    })
-  }
+onMounted(() => { highlight(); if (store.enabled) inject() })
+watch(() => props.content, () => nextTick(highlight))
+watch(() => props.buryPoints, () => { if (store.enabled) nextTick(inject) })
+watch(() => store.enabled, v => v ? nextTick(inject) : (injected.forEach(x => x.remove()), injected = []))
+watch(() => store.scrollTick, () => {
+  if (injected.length) nextTick(() => injected[0].scrollIntoView({ behavior: 'smooth', block: 'center' }))
+  else if (store.enabled) nextTick(inject)
 })
 </script>
 
 <style>
-/* 全局：动态注入的小说句子 */
 .novel-inject {
-  display: inline;
-  color: inherit;
-  font-size: inherit;
-  font-family: inherit;
-  line-height: inherit;
-  cursor: default;
-  user-select: none;
+  display: inline; color: inherit; font-size: inherit;
+  font-family: inherit; line-height: inherit;
+  cursor: default; user-select: none;
 }
 .novel-inject:hover {
-  cursor: pointer;
-  text-decoration: underline;
-  text-decoration-color: #ccc;
-  text-underline-offset: 2px;
+  cursor: pointer; text-decoration: underline;
+  text-decoration-color: #ccc; text-underline-offset: 2px;
 }
 </style>
