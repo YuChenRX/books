@@ -54,8 +54,16 @@ function inject() {
   injected.forEach(x => x.remove())
   injected = []
   const ps = el.value.querySelectorAll('p')
-  console.log(`📌 注入: buryPoints=${JSON.stringify(props.buryPoints)}, ps=${ps.length}, 句子=${store.sentences.length}`)
-  for (const idx of props.buryPoints) {
+  // fallback：如果 buryPoints 为空则自动计算（兼容旧数据）
+  let bps = props.buryPoints
+  if (!bps || bps.length === 0) {
+    console.log('⚠️ 无 buryPoints，自动计算')
+    bps = []
+    const step = Math.max(1, Math.floor(ps.length / 5))
+    for (let j = step; j < ps.length; j += step) bps.push(j)
+  }
+  console.log(`📌 注入: buryPoints=${JSON.stringify(bps)}, ps=${ps.length}, 句子=${store.sentences.length}`)
+  for (const idx of bps) {
     if (idx >= ps.length) { console.log(`  ⚠️ buryPoint ${idx} 超出段落数 ${ps.length}`); continue }
     const s = store.currentSentence()
     if (!s) { console.log('  ⏳ 句子用完了或未加载'); break }

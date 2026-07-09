@@ -11,5 +11,5 @@ export interface Article {
   excerpt: string
   content: string
   /** 预计算的埋点位置：content 按行分割后的行号索引（只指向 <p> 段落） */
-  buryPoints: number[]
+  buryPoints?: number[]
 }
