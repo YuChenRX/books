@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Article } from '@/data/articles'
+import type { Article } from '@/data/types'
 
 defineProps<{
   article?: Article
@@ -100,3 +100,4 @@ defineEmits<{
   navigate: [id: string]
 }>()
 </script>
+

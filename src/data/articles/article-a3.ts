@@ -1,0 +1,42 @@
+import type { Article } from '@/data/types'
+
+const article: Article = // ─── 3. TypeScript 5.0 ───
+  {
+    id: "a3",
+    title: "TypeScript 5.0 标准装饰器与新特性详解",
+    author: "TS 爱好者",
+    date: "2026-06-22",
+    views: "2.1k",
+    likes: 76,
+    comments: 28,
+    tags: ["TypeScript", "编译原理"],
+    avatar: "📘",
+    excerpt: "TypeScript 5.0 引入符合 ECMAScript 标准的装饰器实现、const 类型参数和多项性能优化...",
+    content: [
+      '<h2>一、标准装饰器</h2>',
+      '<p>TypeScript 5.0 实现了 Stage 3 的 ECMAScript 装饰器提案，与之前实验性的 experimentalDecorators 有本质区别。标准装饰器不再依赖 [[Define]] 语义而是使用更安全的 wrapper 模式。context 对象包含 kind 装饰器类型、name 装饰目标名称、access 私有成员访问器和 addInitializer 初始化钩子等属性。</p>',
+      '<pre><code>// 标准装饰器语法（TypeScript 5.0+）\nfunction logMethod<T extends Function>(\n  target: Object,\n  context: ClassMethodDecoratorContext\n) {\n  return function (this: any, ...args: any[]) {\n    console.log(`[${String(context.name)}] 被调用，参数:`, args);\n    const result = target.apply(this, args);\n    console.log(`[${String(context.name)}] 返回:`, result);\n    return result;\n  };\n}\n\nclass Calculator {\n  @logMethod\n  add(a: number, b: number): number {\n    return a + b;\n  }\n}\n\nconst calc = new Calculator();\ncalc.add(3, 5); // 输出: [add] 被调用，参数: [3, 5]  [add] 返回: 8</code></pre>',
+      '<p>TypeScript 5.0 支持五种装饰器类型。类装饰器可以替换或包装类的构造函数。方法装饰器可以替换或拦截方法的调用逻辑。属性装饰器主要用于元数据绑定。访问器装饰器用于 getter/setter 的拦截和验证。自动访问器装饰器是 5.0 新增，允许类字段声明同时具备 getter/setter 的行为。</p>',
+      '<pre><code>// 五种装饰器类型示例\n// 1. 类装饰器\nfunction sealed<T extends { new (...args: any[]): {} }>(target: T, context: ClassDecoratorContext) {\n  Object.seal(target);\n  return target;\n}\n\n@sealed\nclass ApiService {}\n\n// 2. 方法装饰器\nfunction enumerable(value: boolean) {\n  return function (target: any, context: ClassMethodDecoratorContext) {\n    context.addInitializer(function () {\n      Object.defineProperty(this, String(context.name), {\n        enumerable: value,\n      });\n    });\n  };\n}\n\nclass User {\n  @enumerable(false)\n  getPassword() { return "****"; }\n}\n\n// 3. 访问器装饰器\nfunction logged<T>(target: T, context: ClassAccessorDecoratorContext) {\n  return {\n    get(this: any) {\n      console.log(`访问 ${String(context.name)}`);\n      return target.get.call(this);\n    },\n    set(this: any, value: string) {\n      console.log(`设置 ${String(context.name)} = ${value}`);\n      target.set.call(this, value);\n    },\n  };\n}\n\nclass Config {\n  @logged accessor apiUrl: string = "https://api.example.com";\n}</code></pre>',
+      '<p>标准装饰器与 experimentalDecorators 的核心区别在于执行时机和语义。experimentalDecorators 在类定义时由上到下依次执行，而标准装饰器按照从下到上、从内到外的顺序执行。更重要的是，标准装饰器的 context.addInitializer 允许装饰器在类构造阶段注入初始化逻辑，而不需要修改类的原型或构造函数。这使得装饰器可以更加安全和可预测地组合使用。</p>',
+      '<blockquote><p>TypeScript 5.0 中启用标准装饰器需要在 tsconfig.json 中设置 "target": "ES2022" 或更高版本。experimentalDecorators 与标准装饰器不能同时使用。如果你的项目中有大量遗留装饰器代码（如 Angular 或 NestJS），建议先评估升级路径再迁移。</p></blockquote>',
+      '<h2>二、const 类型参数</h2>',
+      '<p>TypeScript 5.0 引入了 const 类型参数，通过在泛型参数上使用 const 修饰符可以让类型推断保留最宽泛的字面量类型。const 类型参数在 API 设计中特别有用，当函数需要接收一个 readonly 元组并保留其长度和元素类型时，const T extends readonly string[] 可以准确捕获传入的元组结构。</p>',
+      '<pre><code>// 无 const 类型参数时，类型会被放宽\nfunction tuple<T extends readonly string[]>(args: T): T {\n  return args;\n}\nconst r1 = tuple(["a", "b", "c"]);\n// r1 的类型: string[]  — 丢失了长度和具体字面量信息\n\n// 使用 const 类型参数\nfunction tupleConst<const T extends readonly string[]>(args: T): T {\n  return args;\n}\nconst r2 = tupleConst(["a", "b", "c"]);\n// r2 的类型: readonly ["a", "b", "c"]  — 保留了元组结构和字面量类型\n\n// 实际应用：类型安全的 API 路由构建\ntype RouteBuilder<const T extends readonly string[]> = {\n  path: T[number];  // 所有可能的路由路径\n  params: Record<T[number], string>;\n};\n\nfunction createRouter<const T extends readonly string[]>(routes: T): RouteBuilder<T> {\n  return { path: routes[0], params: {} as any };\n}\n\nconst router = createRouter(["/users", "/posts", "/settings"]);\n// router 的类型保留了三元组的完整信息</code></pre>',
+      '<p>const 类型参数在函数式编程和 API 设计中有着广泛的应用场景。最常见的场景包括：保留元组类型以进行类型安全的数组操作、保留对象字面量的具体键名用于类型安全的配置对象、保留 Promise.all 的结果元组类型。在 React Hooks 的封装中，const 类型参数可以让自定义 Hook 返回精确的元组类型而无需手动标注。</p>',
+      '<h2>三、性能优化</h2>',
+      '<p>TypeScript 5.0 在编译器性能方面取得了显著进展。包体积从 63.8 MB 降至 56.7 MB。编译器内部数据结构大量使用数组和 Map 替代类对象减少了 GC 压力。语法分析阶段使用非递归的迭代器模式替代了递归下降解析器。类型检查阶段优化了类型实例化的缓存策略。在大型代码库上 TypeScript 5.0 的类型检查速度比 4.9 提升了约 10%-15%。</p>',
+      '<pre><code>// tsconfig.json 性能优化配置\n{\n  "compilerOptions": {\n    "target": "ES2022",\n    "module": "ESNext",\n    "moduleResolution": "bundler",\n    // TypeScript 5.0 新性能特性\n    "skipLibCheck": true,             // 跳过声明文件的类型检查\n    "isolatedModules": true,          // 每个文件独立编译\n    "verbatimModuleSyntax": true,     // 保留显式 import/export\n    \n    // 以下配置利用 5.0 性能改进\n    "strict": true,\n    "noUncheckedIndexedAccess": true,\n    "exactOptionalPropertyTypes": false\n  },\n  // 缩小编译范围\n  "include": ["src/**/*.ts", "src/**/*.tsx"],\n  "exclude": ["node_modules", "dist", "**/*.test.ts"]\n}</code></pre>',
+      '<p>TypeScript 5.0 还引入了多项与性能无关但提升开发体验的新特性。包括在 switch/case 中使用 boolean 类型进行穷举检查的优化、支持 export type * 语法重新导出类型、所有枚举都是联合枚举（不再有常量枚举和联合枚举的区分）、支持 JSDoc 中的 @satisfies 标签。这些特性共同使得 TypeScript 5.0 成为迄今为止最完善、最快速的版本。</p>',
+      '<ul>',
+      '<li><strong>模块解析优化</strong>：新的 "bundler" 模块解析策略简化了与 Vite、esbuild 等打包工具的集成</li>',
+      '<li><strong>枚举增强</strong>：所有枚举现在都是联合枚举，每个枚举成员都有自己的类型</li>',
+      '<li><strong>速度提升</strong>：类型检查速度提升 10%-15%，包体积减少 11%</li>',
+      '<li><strong>装饰器标准化</strong>：实现了 Stage 3 ECMAScript 装饰器提案</li>',
+      '<li><strong>更好的类型推断</strong>：const 类型参数让泛型推断更加精确</li>',
+      '</ul>',
+    ].join("\n")
+  buryPoints: [1],
+  },
+
+export default article
