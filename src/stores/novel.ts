@@ -1,6 +1,24 @@
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 
+// 硬编码小说句子列表，无需网络请求
+const NOVEL_SENTENCES: string[] = [
+  '「人生，是一场无法存档也无法读档的游戏',
+  '」这是我在临终前想出来的最后一句话',
+  '没错，我已经死了',
+  '三十四年的废柴人生，就这样结束了',
+  '只是庸庸碌碌地活着，然后简简单单地死去',
+  '我重生了',
+  '不，更准确地说，我是转生了',
+  '站在镜子面前，我看到了一张陌生的脸',
+  '在这个世界里，魔法是真实存在的',
+  '转眼间，我已经来到这个世界五年了',
+  '在洛琪希老师的指导下，我的魔法水平突飞猛进',
+  '转移事件发生在那个命运般的夜晚',
+  '旅程还在继续',
+  '这——就是我无怨无悔的转生之旅',
+]
+
 const STORAGE_KEY = 'books_novel_progress'
 
 interface Progress {
@@ -42,41 +60,11 @@ export const useNovelStore = defineStore('novel', () => {
     saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value, novelFile: novelFile.value, novelIndex: novelIndex.value })
   }, { deep: true })
 
-  async function loadNovel(url?: string) {
-    const target = url || novelFile.value
-    loading.value = true
-    try {
-      // 优先加载 JSON 句子列表（流式友好，无需解析 DOM）
-      const jsonUrl = target.replace(/\.html$/i, '.json')
-      const jsonRes = await fetch(jsonUrl)
-      if (jsonRes.ok) {
-        const data: string[] = await jsonRes.json()
-        sentences.value = data
-        console.log('📚 loadNovel JSON 加载完成, 句子数:', data.length)
-        novelTitle.value = target.split('/').pop()?.replace(/\.\w+$/, '') || ''
-        if (currentIdx.value >= data.length) currentIdx.value = 0
-        loading.value = false
-        return
-      }
-      // 回退：从 HTML 解析
-      const res = await fetch(target)
-      const html = await res.text()
-      const doc = new DOMParser().parseFromString(html, 'text/html')
-      const ps = doc.querySelectorAll('.chapter-body p')
-      const text = Array.from(ps).map(p => p.textContent || '').join('')
-      const raw = text.split(/[。！？\n；]/).map(s => s.trim()).filter(Boolean)
-      const short = raw.filter(s => {
-        const len = [...s].filter(c => c.match(/[\u4e00-\u9fff\w]/)).length
-        return len >= 2 && len <= 20
-      })
-      sentences.value = short
-      novelTitle.value = (doc.querySelector('title')?.textContent || '').replace(' - 在线阅读', '')
-      if (currentIdx.value >= short.length) currentIdx.value = 0
-    } catch (e) {
-      console.error('novel load fail:', e)
-      sentences.value = []
-    }
-    loading.value = false
+  function loadNovel() {
+    sentences.value = NOVEL_SENTENCES
+    novelTitle.value = '无职转生'
+    if (currentIdx.value >= NOVEL_SENTENCES.length) currentIdx.value = 0
+    console.log('📚 小说已加载, 句子数:', NOVEL_SENTENCES.length)
   }
 
   // 滚动信号：组件 watch 此值触发 scrollIntoView
