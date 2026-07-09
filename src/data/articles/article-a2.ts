@@ -37,7 +37,7 @@ const article: Article = // ─── 2. Webpack → Turbopack ───
       '<pre><code>// 性能基准测试脚本示意\n// benchmark.mjs\nimport { execSync } from "child_process";\n\nconst cases = [\n  { name: "Webpack 冷启动", cmd: "npx webpack --stats=minimal" },\n  { name: "Turbopack 冷启动", cmd: "npx next build --turbo" },\n];\n\nfor (const { name, cmd } of cases) {\n  const start = performance.now();\n  execSync(cmd, { stdio: "pipe" });\n  const elapsed = (performance.now() - start) / 1000;\n  console.log(`${name}: ${elapsed.toFixed(2)}s`);\n}\n\n// 输出示例：\n// Webpack 冷启动: 32.45s\n// Turbopack 冷启动: 2.13s\n// 提升倍数: 15.2x</code></pre>',
       '<p>性能提升的核心原因可以从三个方面理解。第一是语言层面的优势：Rust 编译为原生机器码直接运行，而 Node.js 需要经过 V8 引擎的 JIT 编译过程，在大型构建场景中 Rust 的 CPU 密集处理能力显著优于 JavaScript。第二是架构层面的优势：Turbopack 的增量计算模型粒度远小于 Webpack 的模块级缓存，可以精确到表达式级别，避免了大量不必要的重新计算。第三是并行化优势：Turbopack 利用 Rust 的所有权模型和线程安全特性，在模块打包和代码转换中实现了真正的多线程并行处理，而 Webpack 的 Loader 链式调用本质上是串行的。</p>',
       '<blockquote><p>Vercel 官方公布的基准测试中，Turbopack 在包含 3000 个模块的应用中冷启动比 Webpack 快 700 倍以上，HMR 更新速度快 800 倍以上。虽然这些数据是在理想条件下测得的，但即使在实际生产项目中，10-50 倍的性能提升也是非常普遍的。</p></blockquote>',
-    ].join("\n")
+    ].join("\n"),
   buryPoints: [1],
   },
 

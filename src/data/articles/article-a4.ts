@@ -33,7 +33,7 @@ const article: Article = // ─── 4. 微前端 ───
       '<pre><code>// 子应用 webpack 配置 - 以 qiankun 为例\n// 子应用 webpack.config.js\nconst packageName = require("./package.json").name;\n\nmodule.exports = {\n  output: {\n    library: `${packageName}-[name]`,\n    libraryTarget: "umd",              // 必须为 UMD 格式\n    chunkLoadingGlobal: `webpackJsonp_${packageName}`,\n    globalObject: "window",\n  },\n  devServer: {\n    port: 3001,\n    headers: {\n      "Access-Control-Allow-Origin": "*",  // 允许跨域访问\n    },\n  },\n};\n\n// 子应用入口改造（src/index.tsx）\nlet root: ReactDOM.Root | null = null;\n\nfunction render(props: any) {\n  const { container } = props;\n  const dom = container\n    ? container.querySelector("#root")   // qiankun 提供的挂载点\n    : document.getElementById("root");\n  root = ReactDOM.createRoot(dom);\n  root.render(<App />);\n}\n\n// 独立运行时直接渲染\nif (!(window as any).__POWERED_BY_QIANKUN__) {\n  render({});\n}\n\n// 导出微前端生命周期\nexport async function bootstrap() {\n  console.log("子应用 bootstrap");\n}\nexport async function mount(props: any) {\n  render(props);\n}\nexport async function unmount() {\n  root?.unmount();\n  root = null;\n}</code></pre>',
       '<p>在微前端的性能优化方面，有几个关键的实践要点。子应用的预加载策略：qiankun 支持在浏览器空闲时预加载子应用资源，可以在 start 时配置 prefetch: "all" 或在用户 hover 到导航菜单时触发预加载。公共依赖的共享策略：通过 webpack 的 externals 配置将 React、Vue 等公共库提取为 CDN 加载，或者在 Module Federation 中配置 shared 依赖。子应用代码分割：每个子应用内部也应该按路由进行懒加载，避免一次加载整个子应用的代码。</p>',
       '<blockquote><p>微前端不是银弹。对于中小型项目，一个设计良好的 Monorepo 方案可能比微前端更高效。微前端的价值在团队规模超过 20 人、产品包含多个独立业务域、需要独立发版的情况下才能真正体现出来。在技术选型时，请务必评估团队在微前端运维方面的投入能力。</p></blockquote>',
-    ].join("\n")
+    ].join("\n"),
   buryPoints: [1],
   },
 

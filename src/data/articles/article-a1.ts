@@ -46,7 +46,7 @@ const article: Article = // ─── 1. React 18 ───
       '<pre><code>// 配合 Suspense 使用流式 SSR\nfunction ArticlePage({ articleId }: { articleId: string }) {\n  return (\n    <>\n      {/* 头部信息可以立即发送 */}\n      <Header siteName="我的博客" />\n      \n      {/* 文章主体需要等待数据加载 */}\n      <Suspense fallback={<ArticleSkeleton />}>\n        <ArticleContent id={articleId} />\n      </Suspense>\n      \n      {/* 评论区可以独立加载，互不阻塞 */}\n      <Suspense fallback={<CommentSkeleton />}>\n        <CommentSection id={articleId} />\n      </Suspense>\n    </>\n  );\n}</code></pre>',
       '<p>选择性 Hydration 是 Streaming SSR 的重要配套机制。在流式 HTML 到达浏览器后，React 可以按照 Suspense 边界的粒度逐个对组件进行 hydration，而不需要等待整个页面全部加载完成。这意味着用户可以与已经 hydration 完成的部分进行交互，而其余部分仍在流式加载中。这种渐进式交互体验极大地改善了大型 SSR 应用的用户感知性能。</p>',
       '<blockquote><p>Streaming SSR + Suspense + Selective Hydration 构成了 React 18 服务端渲染的三驾马车。它们共同解决了传统 SSR 的"全有或全无"问题，让页面可以按组件粒度渐进式加载和交互。</p></blockquote>',
-    ].join("\n")
+    ].join("\n"),
   buryPoints: [1, 12],
   },
 

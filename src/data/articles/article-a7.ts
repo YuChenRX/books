@@ -35,7 +35,7 @@ const article: Article = // ─── 7. 浏览器渲染 ───
       '<pre><code><!-- 关键渲染路径优化实践 -->\n\n<!-- 1. 内联关键 CSS（Critical CSS） -->\n<!-- 将首屏所需的 CSS 内联到 HTML 中 -->\n<head>\n  <style>\n    /* 首屏关键 CSS */\n    header { height: 60px; background: #fff; }\n    .hero { font-size: 2rem; margin: 2rem 0; }\n    .hero p { color: #333; line-height: 1.6; }\n  </style>\n  <!-- 非关键 CSS 异步加载 -->\n  <link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">\n</head>\n\n<!-- 2. 使用 preload 预加载关键资源 -->\n<link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>\n<link rel="preload" href="hero.webp" as="image">\n\n<!-- 3. 使用 prefetch 预取后续页面资源 -->\n<link rel="prefetch" href="/next-page/styles.css" as="style">\n\n<!-- 4. 使用 preconnect 提前建立连接 -->\n<link rel="preconnect" href="https://api.example.com">\n<link rel="dns-prefetch" href="https://cdn.example.com">\n\n<!-- 5. 脚本加载优化 -->\n<!-- defer：HTML 解析完成后按顺序执行 -->\n<script defer src="app.js"></script>\n<!-- async：下载完成后立即执行，不保证顺序 -->\n<script async src="analytics.js"></script>\n\n<!-- 6. 图片懒加载 -->\n<img src="placeholder.webp" data-src="real-image.webp" loading="lazy" alt="懒加载图片"></code></pre>',
       '<p>Google 的 Core Web Vitals（核心网页指标）为关键渲染路径优化提供了明确的目标：LCP（Largest Contentful Paint）应在 2.5 秒内，表示最大内容的加载速度；FID（First Input Delay）应在 100ms 内，表示交互响应速度；CLS（Cumulative Layout Shift）应小于 0.1，表示视觉稳定性。针对这些指标的优化方法包括：优化图片和字体加载以减少 LCP、拆分长任务以减少 FID、为图片和广告预留空间以减少 CLS。</p>',
       '<blockquote><p>一个非常有用但容易被忽视的优化技巧是使用 content-visibility: auto 属性。当元素在视口外时，浏览器会跳过它的渲染工作（包括 Layout 和 Paint），仅当元素滚动到视口内时才完整渲染。这在长内容列表或大型文档页面上可以显著提升初始渲染性能。但需注意，content-visibility 会影响元素的占位尺寸计算，通常需要配合 contain-intrinsic-size 一起使用。</p></blockquote>',
-    ].join("\n")
+    ].join("\n"),
   buryPoints: [1, 10],
   },
 

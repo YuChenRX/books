@@ -32,7 +32,7 @@ const article: Article = // ─── 8. CSS Container Queries ───
       '<pre><code>/* 渐进增强策略 */\n\n/* 1. 基础样式（所有浏览器） */\n.card {\n  display: flex;\n  flex-direction: column;\n  /* 默认竖排布局 */\n}\n\n.card__image {\n  width: 100%;\n  height: 200px;\n  object-fit: cover;\n}\n\n/* 2. 媒体查询降级（兼容旧浏览器） */\n@media (min-width: 768px) {\n  .card {\n    flex-direction: row;\n  }\n  .card__image {\n    width: 40%;\n    height: auto;\n  }\n}\n\n/* 3. 容器查询增强（现代浏览器） */\n.card-container {\n  container-type: inline-size;\n}\n\n@container (min-width: 500px) {\n  .card {\n    flex-direction: row;\n  }\n  .card__image {\n    width: 40%;\n  }\n}\n\n/* 4. 使用 @supports 检测支持 */\n@supports (container-type: inline-size) {\n  .card-container {\n    container-type: inline-size;\n  }\n}</code></pre>',
       '<p>除了 @supports 检测外，还可以使用 CSS 的 @when 和 @else 语句进行更优雅的特性检测（目前尚在提案阶段）。在生产环境中，推荐使用 PostCSS 插件 postcss-container-queries 来进行转换和 polyfill。虽然 polyfill 方案无法完全模拟容器查询的原生性能，但对于内容为主且不涉及高频动画的页面来说，是一个可接受的过渡方案。</p>',
       '<blockquote><p>Container Queries 的引入标志着前端响应式设计从"视口为中心"向"容器为中心"的范式转变。结合 CSS Grid 的 subgrid 和 Masonry 布局，前端开发者正在拥有前所未有的布局控制能力。这些新特性共同推动了一个理想的组件化设计系统——组件只关心自己的展示逻辑，完全独立于其所在的页面位置。</p></blockquote>',
-    ].join("\n")
+    ].join("\n"),
   buryPoints: [1],
   },
 

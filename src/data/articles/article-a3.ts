@@ -35,7 +35,7 @@ const article: Article = // ─── 3. TypeScript 5.0 ───
       '<li><strong>装饰器标准化</strong>：实现了 Stage 3 ECMAScript 装饰器提案</li>',
       '<li><strong>更好的类型推断</strong>：const 类型参数让泛型推断更加精确</li>',
       '</ul>',
-    ].join("\n")
+    ].join("\n"),
   buryPoints: [1],
   },
 

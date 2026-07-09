@@ -31,7 +31,7 @@ const article: Article = // ─── 9. Module Federation ───
       '<p>Module Federation 虽然功能强大，但并非适合所有场景。其最大的限制是要求所有参与的子应用都使用 Webpack 5 构建，这限制了技术栈的灵活性——如果你的项目中包含 Vite、Rspack 或 Turbopack 构建的应用，它们无法直接参与 Module Federation 的模块共享。不过，社区已经有一些解决方案：@module-federation/vite 插件允许 Vite 应用作为 Remote 参与联邦，Rspack 也正在实现 Module Federation 兼容层。</p>',
       '<p>另一个局限是运行时加载远程模块会增加首屏的网络请求数，在慢速网络环境下影响用户体验。对于简单的页面或组件共享场景，使用 npm 包发布共享组件库可能是更轻量的选择。对于同一个团队维护的多个应用，Monorepo（如 Turborepo、Nx）配合 TypeScript 的 Project References 也能实现高效的代码共享，且避免了 Module Federation 的版本协调和部署顺序问题。</p>',
       '<blockquote><p>选择 Module Federation 还是其他方案，取决于项目的具体需求。如果你的团队规模较大（>50 人）、各子应用由不同团队独立开发和发版、且所有应用都使用 Webpack 5，那么 Module Federation 是一个理想的选择。如果你的团队较小或技术栈多样，Monorepo 或 npm 包共享更加简洁高效。微前端的核心价值在于"独立开发、独立部署"，而非技术本身。</p></blockquote>',
-    ].join("\n")
+    ].join("\n"),
   buryPoints: [1],
   },
 

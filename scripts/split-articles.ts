@@ -52,10 +52,10 @@ for (let i = 1; i < blocks.length; i++) {
     buryPoints.push(pLines[Math.min(j * step, pLines.length - 1)])
   }
 
-  // 在 content 数组后插入 buryPoints
+  // 在 content 数组后插入 buryPoints（补逗号）
   const beforeInsert = block.slice(0, insertAt)
   const afterInsert = block.slice(insertAt)
-  const buryStr = `\n  buryPoints: [${buryPoints.join(', ')}]`
+  const buryStr = `,\n  buryPoints: [${buryPoints.join(', ')}]`
   const newBlock = beforeInsert + buryStr + afterInsert
 
   writeFileSync(`${dir}/article-${id}.ts`,

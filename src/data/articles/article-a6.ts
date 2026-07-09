@@ -31,7 +31,7 @@ const article: Article = // ─── 6. Git 高级技巧 ───
       '<pre><code># 查看 HEAD 的引用日志\n$ git reflog\n# a1b2c3d (HEAD -> main) HEAD@{0}: commit: fix: security vulnerability\n# e4f5g6h HEAD@{1}: reset: moving to HEAD~1\n# i7j8k9l HEAD@{2}: commit: refactor database layer\n# m0n1o2p HEAD@{3}: rebase (finish): returning to refs/heads/main\n# ...\n\n# 找回误 reset 丢失的提交\n$ git reset --hard HEAD~3        # 糟糕！回退了 3 个提交\n$ git reflog                     # 查看 HEAD 的历史\n$ git reset --hard HEAD@{1}      # 恢复到 reset 之前的状态\n\n# 找回被删除的分支\n# 如果你不小心删除了一个尚未合并的分支：\n$ git branch -D feature-auth     # 糟糕！分支被删除\n# 如果记得分支最后一次指向的提交：\n$ git branch feature-auth a1b2c3d  # 用提交哈希恢复分支\n# 如果不记得提交哈希：\n$ git reflog                     # 找到 feature-auth 相关操作\n$ git branch feature-auth HEAD@{5} # 从 reflog 恢复分支\n\n# 查看特定分支的 reflog\n$ git reflog show feature-auth\n\n# 修改 reflog 保留期限（默认 90 天）\n$ git config gc.reflogExpire 180        # 有变动的引用保留 180 天\n$ git config gc.reflogExpireUnreachable 30  # 不可达的引用保留 30 天\n\n# 清理 reflog（慎用！清理后丢失的提交将无法找回）\n$ git reflog expire --all --expire=now\n$ git gc --prune=now</code></pre>',
       '<blockquote><p>养成定期使用 git reflog 的习惯是 Git 进阶的重要一步。当你执行任何有风险的 Git 操作前，可以先运行 git reflog 记录当前 HEAD 位置。如果操作出错，你可以在 reflog 中找到之前的哈希值并恢复。reflog 是 Git 的回收站，它在过去 90 天内记录了你所有的操作轨迹，这给了你充足的时间来纠正误操作。</p></blockquote>',
       '<p>git reflog 的最佳实践包括：在执行破坏性操作（如 rebase、reset --hard、branch -D）之前先记录当前 reflog 状态。当使用 git stash 后忘记 stash 的内容时，可以通过 git reflog show stash 查看 stash 的 reflog。在协作环境中，reflog 是恢复误删除的远程跟踪分支的唯一途径。需要注意的是，reflog 是本地仓库的日志，不会随 git push 推送到远程仓库，因此每个开发者都需要自己管理和备份。</p>',
-    ].join("\n")
+    ].join("\n"),
   buryPoints: [1],
   },
 
