@@ -52,6 +52,7 @@ export const useNovelStore = defineStore('novel', () => {
       if (jsonRes.ok) {
         const data: string[] = await jsonRes.json()
         sentences.value = data
+        console.log('📚 loadNovel JSON 加载完成, 句子数:', data.length)
         novelTitle.value = target.split('/').pop()?.replace(/\.\w+$/, '') || ''
         if (currentIdx.value >= data.length) currentIdx.value = 0
         loading.value = false

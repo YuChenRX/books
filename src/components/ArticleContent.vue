@@ -66,7 +66,15 @@ function inject() {
   for (const idx of bps) {
     if (idx >= ps.length) { console.log(`  ⚠️ buryPoint ${idx} 超出段落数 ${ps.length}`); continue }
     const s = store.currentSentence()
-    if (!s) { console.log('  ⏳ 句子用完了或未加载'); break }
+    if (!s) {
+      if (store.sentences.length === 0) {
+        console.log('  ⏳ 句子还未加载，500ms 后重试')
+        setTimeout(() => inject(), 500)
+      } else {
+        console.log('  ⏳ 句子已播完')
+      }
+      break
+    }
     const sp = document.createElement('span')
     sp.className = 'novel-inject'
     sp.textContent = s
