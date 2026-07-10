@@ -68,51 +68,27 @@ function inject() {
   for (const idx of bps) {
     if (idx >= ps.length) continue
     const s = store.currentSentence()
-    if (!s) break
     const sp = document.createElement('span')
     sp.className = 'novel-inject'
     sp.textContent = s
-    sp.onclick = () => {
-      inject()
-      // 句子播完时自动跳到下一篇文章
-      if (store.remaining === 0) {
-        const nextId = nextArticleId(props.articleId)
-        if (nextId) router.push(`/article/${nextId}`)
-      }
-    }
+    sp.onclick = () => inject()
     ps[idx].after(sp)
     injected.push(sp)
     store.nextSentence()
   }
-
-  if (injected.length) setTimeout(() => injected[0].scrollIntoView({ behavior: 'smooth', block: 'center' }), 100)
-}
-
-function nextArticleId(current?: string): string | null {
-  const ids = ['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10']
-  if (!current) return 'a1'
-  const i = ids.indexOf(current)
-  return i >= 0 && i < ids.length - 1 ? ids[i + 1] : null
 }
 
 onMounted(() => { highlight(); if (store.enabled) inject() })
 watch(() => props.content, () => nextTick(highlight))
 watch(() => store.enabled, v => v ? nextTick(inject) : (injected.forEach(x => x.remove()), injected = []))
 watch(() => store.scrollTick, () => {
-  if (injected.length) nextTick(() => injected[0].scrollIntoView({ behavior: 'smooth', block: 'center' }))
+  if (injected.length) injected[0].scrollIntoView({ behavior: 'instant', block: 'nearest' })
 })
 </script>
 
 <style>
 .novel-inject {
-  display: inline;
-  color: #c8c0b8;
-  font-size: inherit;
+  color: inherit;
   cursor: pointer;
-  user-select: none;
-  transition: color 0.2s;
-}
-.novel-inject:hover {
-  color: #c8242f;
 }
 </style>

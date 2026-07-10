@@ -29,12 +29,15 @@
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 14v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2zm-11 2l-5-5 5-5 1.41 1.41L7.83 10H17v2H7.83l3.58 3.59L8 16z"/></svg>
           写博客
         </a>
-        <!-- 铃铛：小说编号固定为 1，点击滚动到第一个句子 -->
-        <div v-if="novelStore.enabled" class="relative">
-          <svg class="w-5 h-5 text-white/70 hover:text-white cursor-pointer transition-colors" @click="novelStore.scrollToFirst()" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
-          </svg>
-          <span class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#c8242f] text-white text-[10px] font-bold flex items-center justify-center rounded-full leading-none">1</span>
+        <!-- 铃铛 + 进度 -->
+        <div v-if="novelStore.enabled" class="flex items-center gap-2">
+          <span class="text-[11px] text-white/50">{{ (novelStore.totalRead % 14) + 1 }}/{{ novelStore.sentences.length }}</span>
+          <div class="relative">
+            <svg class="w-5 h-5 text-white/70 hover:text-white cursor-pointer transition-colors" @click="novelStore.scrollToFirst()" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+            <span class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#c8242f] text-white text-[10px] font-bold flex items-center justify-center rounded-full leading-none">1</span>
+          </div>
         </div>
       </div>
     </div>

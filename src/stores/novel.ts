@@ -84,25 +84,27 @@ export const useNovelStore = defineStore('novel', () => {
     scrollTick.value++
   }
 
-  function currentSentence(): string | null {
-    return currentIdx.value < sentences.value.length ? sentences.value[currentIdx.value] : null
+  function currentSentence(): string {
+    const len = sentences.value.length
+    if (len === 0) return ''
+    return sentences.value[currentIdx.value % len]
   }
 
-  /** 点击句子推进 */
-  function nextSentence(): string | null {
-    if (currentIdx.value < sentences.value.length) {
-      const s = sentences.value[currentIdx.value++]
-      saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value, novelFile: novelFile.value, novelIndex: novelIndex.value })
-      return s
-    }
-    enabled.value = false
-    return null
+  /** 循环推进，永不停止 */
+  function nextSentence(): string {
+    const len = sentences.value.length
+    if (len === 0) return ''
+    const s = sentences.value[currentIdx.value % len]
+    currentIdx.value++
+    saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value, novelFile: novelFile.value, novelIndex: novelIndex.value })
+    return s
   }
 
-  const remaining = computed(() => Math.max(0, sentences.value.length - currentIdx.value))
+  /** 总句数（无限循环，但记录已读轮次） */
+  const totalRead = computed(() => currentIdx.value)
 
   return {
     enabled, sentences, currentIdx, novelFile, novelIndex, novelTitle, loading,
-    loadNovel, bump, scrollToFirst, scrollTick, currentSentence, nextSentence, remaining
+    loadNovel, bump, scrollToFirst, scrollTick, currentSentence, nextSentence, totalRead
   }
 })
