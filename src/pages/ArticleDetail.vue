@@ -68,7 +68,7 @@
           </div>
 
           <!-- 正文 -->
-          <ArticleContent v-if="article" :content="article.content" :buryPoints="article.buryPoints ?? []" />
+          <ArticleContent v-if="article" :content="article.content" :buryPoints="article.buryPoints ?? []" :articleId="article.id" />
 
           <!-- 底部标签 -->
           <div v-if="article" class="px-6 pb-4 flex items-center gap-2 flex-wrap border-t pt-4" style="border-color: var(--csdn-border)">

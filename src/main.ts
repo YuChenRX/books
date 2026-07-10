@@ -12,6 +12,10 @@ import '@mdi/font/css/materialdesignicons.css'
 // @ts-ignore
 import { registerPlugins } from './plugins'
 
+// 构建版本号（由 vite.config.ts 注入）
+declare const __BUILD_TIME__: string
+console.log(`📦 build: ${__BUILD_TIME__}`)
+
 const app = createApp(App)
 
 registerPlugins(app)

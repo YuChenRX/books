@@ -78,6 +78,9 @@ export default defineConfig(({ mode }) => {
       globals: true,
       environment: 'happy-dom',
       setupFiles: ['./tests/utils/setup.ts'],
+    },
+    define: {
+      __BUILD_TIME__: JSON.stringify(new Date().toISOString().replace('T', ' ').slice(0, 19))
     }
   }
 })
