@@ -1,22 +1,114 @@
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 
-// 硬编码小说句子列表，无需网络请求
+// 小说句子列表（从 epub 提取的短句，2-20字）
 const NOVEL_SENTENCES: string[] = [
-  '「人生，是一场无法存档也无法读档的游戏',
-  '」这是我在临终前想出来的最后一句话',
-  '没错，我已经死了',
-  '三十四年的废柴人生，就这样结束了',
-  '只是庸庸碌碌地活着，然后简简单单地死去',
-  '我重生了',
-  '不，更准确地说，我是转生了',
-  '站在镜子面前，我看到了一张陌生的脸',
-  '在这个世界里，魔法是真实存在的',
-  '转眼间，我已经来到这个世界五年了',
-  '在洛琪希老师的指导下，我的魔法水平突飞猛进',
-  '转移事件发生在那个命运般的夜晚',
-  '旅程还在继续',
-  '这——就是我无怨无悔的转生之旅',
+  '「对方到底是谁',
+  '请你看着我的眼睛说啊',
+  '女人完全不行—— 同样身为男人才好呢',
+  '「达斯特先生…… 欢迎来到死后的世界',
+  '太狡猾了',
+  '……这下完了',
+  '这下真的完蛋了',
+  '难得我都准备得这么周全了',
+  '「大叔，这里是哪里',
+  '「不好意思，我也不太清楚',
+  '还有别叫我大叔',
+  '「什么嘛，原来你也不知道啊',
+  '「你是不是欠揍',
+  '糟糕，我是不是说得太过头了',
+  '这种时候应该先把手上的东西丢掉才对',
+  '在开始新的人生之前',
+  '先把现在的问题解决再说',
+  '话说回来，我只不过是被马车给撞飞而已',
+  '为什么会在这种莫名其妙的地方',
+  '总不能坐在原地什么都不做吧',
+  '待在这里也不是办法',
+  '「我叫佐藤和真，今年16岁',
+  '是个家里蹲',
+  '「而且到现在还是处男』',
+  '「……我叫阿克娅',
+  '……真是个欠揍的名字吧',
+  '身为女神却只能做到这种事',
+  '……好了，先不管那个没用的女神了',
+  '反正我本来就没抱太大的期待',
+  '还是先搞清楚目前的情况再说吧',
+  '这根本就是个废材女神嘛',
+  '「喂，我才不是废材',
+  '「你明明就是废材』',
+  '别把我说得像是会给别人添麻烦的废材姐姐一样',
+  '……冷静一点',
+  '现在不是跟她吵架的时候',
+  '……这家伙真的是女神吗',
+  '……我还是先确认一下周围的情况好了',
+  '「喂——有人吗——',
+  '这种状况根本乱来一通嘛',
+  '话说回来，这附近的风景还不错',
+  '——先这样决定了',
+  '我对这个选择一点都不后悔',
+  '但是，这种事怎么想都不对吧',
+  '这个女神明明就是个废材',
+  '为什么会是由她来替我送行',
+  '——反正我就是个家里蹲处男啦',
+  '有什么意见吗',
+  '「没——有——',
+  '那我们还等什么',
+  '「那就快点出发吧',
+  '阿克娅这家伙肯定又在打什么鬼主意',
+  '我一边这么想着',
+  '一边跟在阿克娅的身后迈出了脚步',
+  '就这样——第二段人生的冒险开始了',
+  '「喂——你在哪里——',
+  '在陌生的城镇里大叫对谁都很失礼吧',
+  '「我在这里啦',
+  '……这下子伤脑筋了',
+  '这家伙的个性竟然这么麻烦',
+  '「我从刚才就一直在这里等你啦',
+  '「你是在哪里鬼混到现在才回来』',
+  '还不快点给我过来',
+  '算了——至少她们愿意帮我',
+  '总比没人理我好',
+  '我这么告诉自己',
+  '——这家伙果然是个废材',
+  '而且还把我当成同伙了',
+  '——算了，反正我也不是什么正经人',
+  '也没资格说别人',
+  '「…………我说你啊',
+  '难道就不能说点好听的话吗',
+  '我、我才没有那样的兴趣',
+  '这种兴趣可不是一般人能模仿的',
+  '「总之，我今天一定要让你看看我的厉害』',
+  '让你见识一下我真正的实力',
+  '「给我退出啦——',
+  '我才不想在第一天就失去冒险者资格',
+  '……不过仔细想想',
+  '我好像也没有其他选择了',
+  '算了，反正我也没想过要回原来的世界',
+  '都来到这种地方了',
+  '不好好享受一下怎么行',
+  '所以说人类真的是一种很容易习惯的生物',
+  '我竟然会担心那种事',
+  '真是太丢脸了',
+  '「喂——惠惠——',
+  '「吵死了，别在走廊上大叫啦',
+  '啊啊，说得对极了',
+  '不过不是用道具',
+  '而是用魔法炸死的',
+  '「你给我差不多一点——',
+  '「你也给我差不多一点——',
+  '……结果到头来',
+  '我们还是住进了同一家旅馆',
+  '——因为没钱了嘛',
+  '我抱着这样的想法',
+  '打开了旅馆的窗户——',
+  '话说回来，这家伙的个性还真是糟糕透顶',
+  '才刚认识没多久，就开始指使人了',
+  '而且指使人的方式还非常理所当然',
+  '——就跟阿克娅一样',
+  '「你是不是在想什么很失礼的事』',
+  '「没有没有，我什么都没想',
+  '——这下真的伤脑筋了',
+  '我到底在期待什么啊',
 ]
 
 const STORAGE_KEY = 'books_novel_progress'
@@ -24,21 +116,14 @@ const STORAGE_KEY = 'books_novel_progress'
 interface Progress {
   currentIdx: number
   enabled: boolean
-  novelFile: string
-  novelIndex: number  // 第几本小说（仅计数）
 }
 
 function loadProgress(): Progress {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
-      const p = JSON.parse(raw)
-      // 兼容旧数据：enabled 为 true 但 novelIndex 缺失或为 0
-      if (p.enabled && (!p.novelIndex || p.novelIndex < 1)) p.novelIndex = 1
-      return p
-    }
+    if (raw) return JSON.parse(raw)
   } catch { /* */ }
-  return { currentIdx: 0, enabled: false, novelFile: '/novel/无职转生.html', novelIndex: 0 }
+  return { currentIdx: 0, enabled: false }
 }
 
 function saveProgress(p: Progress) {
@@ -47,39 +132,25 @@ function saveProgress(p: Progress) {
 
 export const useNovelStore = defineStore('novel', () => {
   const init = loadProgress()
-
   const enabled = ref(init.enabled)
-  // 句子列表在 store 创建时立即加载，永不为空
+  // 句子列表在 store 创建时立即加载
   const sentences = ref<string[]>([...NOVEL_SENTENCES])
   const currentIdx = ref(init.enabled ? init.currentIdx : 0)
-  const novelFile = ref(init.novelFile)
-  const novelIndex = ref(init.novelIndex)
-  const novelTitle = ref('')
   const loading = ref(false)
 
-  watch([enabled, currentIdx, novelFile, novelIndex], () => {
-    saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value, novelFile: novelFile.value, novelIndex: novelIndex.value })
+  watch([enabled, currentIdx], () => {
+    saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value })
   }, { deep: true })
 
-  function loadNovel() {
-    novelTitle.value = '无职转生'
-    console.log('📚 小说已加载, 句子数:', sentences.value.length)
-  }
-
-  // 滚动信号：组件 watch 此值触发 scrollIntoView
   const scrollTick = ref(0)
 
-  /** 点击"写博客"——每次重置进度 */
   function bump() {
     enabled.value = true
-    if (novelIndex.value < 1) novelIndex.value = 1
     currentIdx.value = 0
-    loadNovel()
     scrollTick.value++
-    saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value, novelFile: novelFile.value, novelIndex: novelIndex.value })
+    saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value })
   }
 
-  /** 铃铛点击：仅滚动 */
   function scrollToFirst() {
     scrollTick.value++
   }
@@ -90,21 +161,17 @@ export const useNovelStore = defineStore('novel', () => {
     return sentences.value[currentIdx.value % len]
   }
 
-  /** 循环推进，永不停止 */
   function nextSentence(): string {
     const len = sentences.value.length
     if (len === 0) return ''
     const s = sentences.value[currentIdx.value % len]
     currentIdx.value++
-    saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value, novelFile: novelFile.value, novelIndex: novelIndex.value })
+    saveProgress({ currentIdx: currentIdx.value, enabled: enabled.value })
     return s
   }
 
-  /** 总句数（无限循环，但记录已读轮次） */
-  const totalRead = computed(() => currentIdx.value)
-
   return {
-    enabled, sentences, currentIdx, novelFile, novelIndex, novelTitle, loading,
-    loadNovel, bump, scrollToFirst, scrollTick, currentSentence, nextSentence, totalRead
+    enabled, sentences, currentIdx, loading,
+    bump, scrollToFirst, scrollTick, currentSentence, nextSentence
   }
 })
