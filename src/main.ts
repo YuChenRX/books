@@ -14,7 +14,8 @@ import { registerPlugins } from './plugins'
 
 // 构建版本号（北京时间，由 vite.config.ts 注入）
 declare const __BUILD_TIME__: string
-console.log(`📦 build: ${__BUILD_TIME__}`)
+;(window as any).__BUILD_TIME__ = __BUILD_TIME__
+setTimeout(() => console.log(`📦 build: ${__BUILD_TIME__}`))
 
 const app = createApp(App)
 
