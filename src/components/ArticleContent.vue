@@ -44,28 +44,30 @@ function highlight() {
 
 function inject() {
   if (!el.value || !store.enabled) return
-  els.forEach(x => x.remove())
+  els.forEach(x => { try { x.remove() } catch {} })
   els = []
   const ps = el.value.querySelectorAll('p')
   if (!ps.length) return
   const bps = props.buryPoints?.length ? props.buryPoints : (() => {
     const a: number[] = []
-    for (let j = Math.floor(ps.length / 5); j < ps.length; j += Math.floor(ps.length / 5)) a.push(j)
+    const step = Math.max(1, Math.floor(ps.length / 5))
+    for (let j = step; j < ps.length; j += step) a.push(j)
     return a
   })()
   for (const idx of bps) {
     if (idx >= ps.length) continue
     const s = store.currentSentence()
-    if (!s) break
+    if (!s) continue
     const sp = document.createElement('span')
     sp.className = 'ni'
     sp.textContent = s
-    // 点击：刷新句子并滚动到第一个新句子
     sp.onclick = () => { inject() }
     ps[idx].after(sp)
     els.push(sp)
     store.nextSentence()
   }
+  // 滚动到第一个新句子
+  if (els.length) els[0].scrollIntoView()
 }
 
 onMounted(() => { highlight(); if (store.enabled) inject() })
