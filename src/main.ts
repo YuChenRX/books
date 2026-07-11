@@ -12,16 +12,9 @@ import '@mdi/font/css/materialdesignicons.css'
 // @ts-ignore
 import { registerPlugins } from './plugins'
 
-// 构建版本号（由 vite.config.ts 注入，UTC 时间）
+// 构建版本号（北京时间，由 vite.config.ts 注入）
 declare const __BUILD_TIME__: string
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
-import timezone from 'dayjs/plugin/timezone'
-dayjs.extend(utc)
-dayjs.extend(timezone)
-const bt = dayjs.utc(__BUILD_TIME__).tz('Asia/Shanghai').format('YYYY-MM-DD HH:mm:ss')
-console.log(`📦 build: ${bt} (CST)`)
-console.log(`📦 build(UTC): ${__BUILD_TIME__}`)
+console.log(`📦 build: ${__BUILD_TIME__}`)
 
 const app = createApp(App)
 
